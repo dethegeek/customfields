@@ -27,7 +27,10 @@ while ($data=$DB->fetch_assoc($result)) {
 		if ($item->getType() == "NetworkEquipment") {
 			return $LANG["plugin_customfields"]["Custom_Field"];
 		}
-		if ($item->getType() == "Printer") {
+		if ($item->getType() == "Peripheral") {
+			return $LANG["plugin_customfields"]["Custom_Field"];
+		}
+      	if ($item->getType() == "Printer") {
 			return $LANG["plugin_customfields"]["Custom_Field"];
 		}
 		if ($item->getType() == "CartridgeItem") {
