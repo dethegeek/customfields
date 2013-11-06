@@ -12,7 +12,9 @@ while ($data=$DB->fetch_assoc($result)) {
 	
 	function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 		global $LANG;
+      	
       		
+      	// These if blocks may appear useless. Let us keep them while I discover the plugin
 		if ($item->getType() == "Computer") {
 			return $LANG["plugin_customfields"]["Custom_Field"];
 		}
