@@ -82,7 +82,7 @@ function plugin_init_customfields() {
             $ALL_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
             if ($data['enabled']) {
                $ACTIVE_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
-         	   Plugin::registerClass('PluginCustomfieldsComputer', array('addtabon' => array($data['itemtype'])));
+         	   Plugin::registerClass('PluginCustomfields' . $data['itemtype'], array('addtabon' => array($data['itemtype'])));
             }
          }
 
