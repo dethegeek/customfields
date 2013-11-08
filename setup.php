@@ -70,7 +70,7 @@ function plugin_init_customfields() {
    if (isset($_SESSION['glpiID'])){
       $plugin = new Plugin();
       
-    if ($plugin->isActivated("customfields")) {
+    if ($plugin->isInstalled("customfields") && $plugin->isActivated("customfields")) {
          include_once ('inc/virtual_classes.php');
           
          $query = "SELECT `itemtype`, `enabled`
@@ -85,7 +85,6 @@ function plugin_init_customfields() {
          	   Plugin::registerClass('PluginCustomfields' . $data['itemtype'], array('addtabon' => array($data['itemtype'])));
             }
          }
-
 
          $query = "SELECT *
                    FROM `glpi_plugin_customfields_dropdowns`
@@ -112,8 +111,6 @@ function plugin_init_customfields() {
 //          $PLUGIN_HOOKS['headings']['customfields'] = 'plugin_get_headings_customfields';
 //          $PLUGIN_HOOKS['headings_action']['customfields'] = 'plugin_headings_actions_customfields';
               
-         
-         
          // Functions to run when data changes
          //TODO: may need to filter out component types )after addidng components)
          foreach($ACTIVE_CUSTOMFIELDS_TYPES as $type) {
