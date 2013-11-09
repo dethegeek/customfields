@@ -64,7 +64,7 @@ function pluginCustomfieldsInstall() {
                        ('ConsumableItem'), ('Phone'), ('Ticket'), ('Contact'),
                        ('Supplier'), ('Contract'), ('Document'), ('User'), 
                        ('Group'), ('Entity'), ('DeviceProcessor'), ('DeviceMemory'),
-                       ('DeviceMotherBoard'), ('DeviceNetworkCard'), ('DeviceHardDrive'),
+                       ('DeviceMotherboard'), ('DeviceNetworkCard'), ('DeviceHardDrive'),
                        ('DeviceDrive'), ('DeviceControl'), ('DeviceGraphicCard'),
                        ('DeviceSoundCard'), ('DeviceCase'), ('DevicePowerSupply'),
                        ('DevicePci')";

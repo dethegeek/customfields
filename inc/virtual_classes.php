@@ -25,7 +25,28 @@ while ($data=$DB->fetch_assoc($result)) {
       		case "Phone":
       		case "ComputerDisk":
       		case "Supplier":
-				return $LANG["plugin_customfields"]["title"];
+      		case "SoftwareVersion":
+      		case "SoftwareLicense":
+      		case "Ticket":
+      		case "Contact":
+      		case "Contract":
+      		case "Document":
+      		case "User":
+      		case "Group":
+      		case "Entity":
+      		case "DeviceProcessor":
+      		case "DeviceMemory":
+      		case "DeviceMotherboard":
+      		case "DeviceNetworkCard":
+      		case "DeviceHardDrive":
+      		case "DeviceDrive":
+      		case "DeviceControl":
+      		case "DeviceGraphicCard":
+      		case "DeviceSoundCard":
+      		case "DeviceCase":
+      		case "DevicePowerSupply":
+      		case "DevicePci":
+      		return $LANG["plugin_customfields"]["title"];
       			break;
       	}
       		
@@ -38,67 +59,38 @@ while ($data=$DB->fetch_assoc($result)) {
       	// (the name comes from a copy / paste https://forge.indepnet.net/projects/plugins/wiki/Fr_CreatePlugin084)
 		switch ($item->getType()) {
 			case "Computer":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Monitor":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Software":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "NetworkEquipment":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Peripheral":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Printer":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "CartridgeItem":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "ConsumableItem":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Phone":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "ComputerDisk":
-				$prof = new self();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$prof->showForm($ID);
-				break;
 			case "Supplier":
-				$prof = new self();
+      		case "SoftwareVersion":
+      		case "SoftwareLicense":
+      		case "Ticket":
+      		case "Contact":
+      		case "Contract":
+      		case "Document":
+      		case "User":
+      		case "Group":
+      		case "Entity":
+      		case "DeviceProcessor":
+      		case "DeviceMemory":
+      		case "DeviceMotherboard":
+      		case "DeviceNetworkCard":
+      		case "DeviceHardDrive":
+      		case "DeviceDrive":
+      		case "DeviceControl":
+      		case "DeviceGraphicCard":
+      		case "DeviceSoundCard":
+      		case "DeviceCase":
+      		case "DevicePowerSupply":
+      		case "DevicePci":
+      			$prof = new self();
 				$ID = $item->getField("id");
 				// j affiche le formulaire
 				$prof->showForm($ID);
