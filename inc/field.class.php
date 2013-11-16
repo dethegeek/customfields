@@ -43,67 +43,156 @@ if (!defined('GLPI_ROOT')) {
 // CLASS customfields
 class PluginCustomfieldsField extends CommonDBTM {
 
-
 	function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-		if ($item->getType() == 'Field') {
-			return $LANG["plugin_customfields"]["title"];
-		}
-		return '';
+		global $LANG;
+      	
+		switch ($item->getType()) {
+      		case "Computer":
+      		case "Monitor":
+      		case "Software":
+      		case "NetworkEquipment":
+      		case "Peripheral":
+      		case "Printer":
+      		case "CartridgeItem":
+      		case "ConsumableItem":
+      		case "Phone":
+      		case "ComputerDisk":
+      		case "Supplier":
+      		case "SoftwareVersion":
+      		case "SoftwareLicense":
+      		case "Ticket":
+      		case "Contact":
+      		case "Contract":
+      		case "Document":
+      		case "User":
+      		case "Group":
+      		case "Entity":
+      		case "DeviceProcessor":
+      		case "DeviceMemory":
+      		case "DeviceMotherboard":
+      		case "DeviceNetworkCard":
+      		case "DeviceHardDrive":
+      		case "DeviceDrive":
+      		case "DeviceControl":
+      		case "DeviceGraphicCard":
+      		case "DeviceSoundCard":
+      		case "DeviceCase":
+      		case "DevicePowerSupply":
+      		case "DevicePci":
+      		return $LANG["plugin_customfields"]["title"];
+      			break;
+      	}
+      		
+      	return "";
 	}
-	
-  static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+		
+	static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
 
-      if ($item->getType() == 'Field') {
-         $prof = new self();
-         $ID = $item->getField('id');
-        // j'affiche le formulaire
-         $prof->showForm($ID);
-      }
-      return true;
+      	// TODO: Rename $prof into something more explicit 
+      	// (the name comes from a copy / paste https://forge.indepnet.net/projects/plugins/wiki/Fr_CreatePlugin084)
+		$itemType = $item->getType();
+		switch ($itemType) {
+			case "Computer":
+			case "Monitor":
+			case "Software":
+			case "NetworkEquipment":
+			case "Peripheral":
+			case "Printer":
+			case "CartridgeItem":
+			case "ConsumableItem":
+			case "Phone":
+			case "ComputerDisk":
+			case "Supplier":
+      		case "SoftwareVersion":
+      		case "SoftwareLicense":
+      		case "Ticket":
+      		case "Contact":
+      		case "Contract":
+      		case "Document":
+      		case "User":
+      		case "Group":
+      		case "Entity":
+      		case "DeviceProcessor":
+      		case "DeviceMemory":
+      		case "DeviceMotherboard":
+      		case "DeviceNetworkCard":
+      		case "DeviceHardDrive":
+      		case "DeviceDrive":
+      		case "DeviceControl":
+      		case "DeviceGraphicCard":
+      		case "DeviceSoundCard":
+      		case "DeviceCase":
+      		case "DevicePowerSupply":
+      		case "DevicePci":
+      			$customFieldsItemType = "PluginCustomfields" . $itemType;
+      			$customFieldsItem = new $customFieldsItemType();
+				$ID = $item->getField("id");
+				// j affiche le formulaire
+				$customFieldsItem->showForm($ID);
+				break;
+		}
+		// TODO: Check if we must always return true 
+		return true;
    }
-   
-   function showForm($id, $options=array()) {
-
-      $target = $this->getFormURL();
-      if (isset($options['target'])) {
+	   
+  function showForm($id, $options=array()) {
+     global $CFG_GLPI, $DB;
+  	  
+     $target = $this->getFormURL();
+     if (isset($options['target'])) {
         $target = $options['target'];
-      }
+     }
 
-      if (!Session::haveRight("profile","r")) {
-         return false;
-      }
+     if (!Session::haveRight("profile","r")) {
+        return false;
+     }
 
-      $canedit = Session::haveRight("profile", "w");
-      $prof = new Profile();
-      if ($id){
-         $this->getFromDB($id);
-         $prof->getFromDB($id);
-      }
-
-      echo "<form action='".$target."' method='post'>";
-      echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='2' class='center b'>".sprintf(__('%1$s %2$s'), ('gestion des droits :'),
-                                                           Dropdown::getDropdownName("glpi_profiles",
-                                                                                     $this->fields["id"]));
-      echo "</th></tr>";
-
-      echo "<tr class='tab_bg_2'>";
-      echo "<td>Utiliser Mon Plugin</td><td>";
-      Profile::dropdownNoneReadWrite("right", $this->fields["right"], 1, 1, 1);
-      echo "</td></tr>";
-
-      if ($canedit) {
-         echo "<tr class='tab_bg_1'>";
-         echo "<td class='center' colspan='2'>";
-         echo "<input type='hidden' name='id' value=$id>";
-         echo "<input type='submit' name='update_user_profile' value='Mettre � jour'
-                class='submit'>";
-         echo "</td></tr>";
-      }
-      echo "</table>";
-      Html::closeForm();
-   }
+	  $canedit = Session::haveRight("profile", "w");
+	     
+	  $itemType = $this->getType();
+	  $associatedItemType = $this->associatedItemType();
+	  $table = $itemType::getTable();
+	      
+	  $sql = "SELECT `label`, `system_name`, `data_type`, `default_value`, `system_name`
+	  		    FROM `glpi_plugin_customfields_fields`
+	    		 WHERE `deleted` = '0' AND `itemtype` = '" . $associatedItemType . "'
+			    ORDER BY `sort_order` ASC, `label` ASC";
+     $result = $DB->query($sql);
+	  $currentSectionName = '';
+  
+     echo "<form action='".$target."' method='post'>";
+	  echo "<table class='tab_cadre_fixe'>";
+	  
+     while ($data = $DB->fetch_assoc($result)) {
+        switch ($data['data_type']) {
+      	  case 'sectionhead':
+      	     $currentSectionName = $data['label'];
+      	     echo "<tr><th colspan='2' class='center b'>" . $currentSectionName;
+         	  echo "</th></tr>";
+         	  break;
+           default:
+           	  if ($currentSectionName == '') {
+           	  	  $currentSectionName = "&nbsp;";
+           	  	  echo "<tr><th colspan='2' class='center b'>" . $currentSectionName;
+           	  	  echo "</th></tr>";
+           	  }
+           	  $fieldName = $data['system_name'];
+           	  $fieldDefaultValue = $data['default_value'];
+      	     echo "<tr><td>" . $data['label'] . "</td><td>";
+      		  echo "<input name='$fieldName' value='$fieldDefaultValue' />";
+      		  echo "</td></tr>";
+        }
+     }
+  	  if ($canedit) {
+	     echo "<tr class='tab_bg_1'>";
+	     echo "<td class='center' colspan='2'>";
+	     echo "<input type='hidden' name='id' value='$id'>";
+	     echo "<input type='submit' name='update_user_profile' value='Mettre à jour' class='submit'>";
+	     echo "</td></tr>";
+	  }
+     echo "</table>";
+	  Html::closeForm();
+  }
 }
 
 ?>
