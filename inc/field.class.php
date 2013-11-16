@@ -47,7 +47,7 @@ class PluginCustomfieldsField extends CommonDBTM {
 	function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
 		if ($item->getType() == 'Field') {
-			return "Champs personnalisés";
+			return $LANG["plugin_customfields"]["title"];
 		}
 		return '';
 	}
@@ -97,7 +97,7 @@ class PluginCustomfieldsField extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<td class='center' colspan='2'>";
          echo "<input type='hidden' name='id' value=$id>";
-         echo "<input type='submit' name='update_user_profile' value='Mettre à jour'
+         echo "<input type='submit' name='update_user_profile' value='Mettre ï¿½ jour'
                 class='submit'>";
          echo "</td></tr>";
       }
