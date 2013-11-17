@@ -103,29 +103,29 @@ class PluginCustomfieldsField extends CommonDBTM {
 			case "Phone":
 			case "ComputerDisk":
 			case "Supplier":
-      		case "SoftwareVersion":
-      		case "SoftwareLicense":
-      		case "Ticket":
-      		case "Contact":
-      		case "Contract":
-      		case "Document":
-      		case "User":
-      		case "Group":
-      		case "Entity":
-      		case "DeviceProcessor":
-      		case "DeviceMemory":
-      		case "DeviceMotherboard":
-      		case "DeviceNetworkCard":
-      		case "DeviceHardDrive":
-      		case "DeviceDrive":
-      		case "DeviceControl":
-      		case "DeviceGraphicCard":
-      		case "DeviceSoundCard":
-      		case "DeviceCase":
-      		case "DevicePowerSupply":
-      		case "DevicePci":
-      			$customFieldsItemType = "PluginCustomfields" . $itemType;
-      			$customFieldsItem = new $customFieldsItemType();
+      	case "SoftwareVersion":
+      	case "SoftwareLicense":
+      	case "Ticket":
+      	case "Contact":
+      	case "Contract":
+      	case "Document":
+      	case "User":
+      	case "Group":
+      	case "Entity":
+      	case "DeviceProcessor":
+      	case "DeviceMemory":
+      	case "DeviceMotherboard":
+      	case "DeviceNetworkCard":
+      	case "DeviceHardDrive":
+      	case "DeviceDrive":
+      	case "DeviceControl":
+      	case "DeviceGraphicCard":
+      	case "DeviceSoundCard":
+      	case "DeviceCase":
+      	case "DevicePowerSupply":
+      	case "DevicePci":
+      		$customFieldsItemType = "PluginCustomfields" . $itemType;
+      		$customFieldsItem = new $customFieldsItemType();
 				$ID = $item->getField("id");
 				// j affiche le formulaire
 				$customFieldsItem->showForm($ID);
@@ -138,7 +138,8 @@ class PluginCustomfieldsField extends CommonDBTM {
   function showForm($id, $options=array()) {
      global $CFG_GLPI, $DB;
   	  
-     $target = $this->getFormURL();
+     //$target = $this->getFormURL();
+     $target = $CFG_GLPI["root_doc"] . "/plugins/customfields/front/field.form.php";
      if (isset($options['target'])) {
         $target = $options['target'];
      }
@@ -152,7 +153,16 @@ class PluginCustomfieldsField extends CommonDBTM {
 	  $itemType = $this->getType();
 	  $associatedItemType = $this->associatedItemType();
 	  $table = $itemType::getTable();
-	      
+	  
+	  $sql = "SELECT *
+	  		    FROM `$table`
+	          WHERE `id` = $id";
+	  $result = $DB->query($sql);
+
+	  $associatedItemCustomValues = $DB->fetch_assoc($result);
+	  
+	  $DB->free_result($result);
+	  
 	  $sql = "SELECT `label`, `system_name`, `data_type`, `default_value`, `system_name`
 	  		    FROM `glpi_plugin_customfields_fields`
 	    		 WHERE `deleted` = '0' AND `itemtype` = '" . $associatedItemType . "'
@@ -177,17 +187,20 @@ class PluginCustomfieldsField extends CommonDBTM {
            	  	  echo "</th></tr>";
            	  }
            	  $fieldName = $data['system_name'];
-           	  $fieldDefaultValue = $data['default_value'];
+           	  $fieldDefaultValue = $associatedItemCustomValues[$fieldName];
       	     echo "<tr><td>" . $data['label'] . "</td><td>";
       		  echo "<input name='$fieldName' value='$fieldDefaultValue' />";
       		  echo "</td></tr>";
         }
      }
+     $DB->free_result($result);
+     
   	  if ($canedit) {
 	     echo "<tr class='tab_bg_1'>";
 	     echo "<td class='center' colspan='2'>";
 	     echo "<input type='hidden' name='id' value='$id'>";
-	     echo "<input type='submit' name='update_user_profile' value='Mettre à jour' class='submit'>";
+	     echo "<input type='hidden' name='customfielditemtype' value='$itemType'>";
+	     echo "<input type='submit' name='update_customfield' value='" . _sx('button','Save') . "' class='submit'>";
 	     echo "</td></tr>";
 	  }
      echo "</table>";
