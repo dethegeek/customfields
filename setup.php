@@ -71,8 +71,7 @@ function plugin_init_customfields() {
       $plugin = new Plugin();
       
     if ($plugin->isInstalled("customfields") && $plugin->isActivated("customfields")) {
-         include_once ('inc/virtual_classes.php');
-          
+
          $query = "SELECT `itemtype`, `enabled`
                    FROM `glpi_plugin_customfields_itemtypes`
                    WHERE `itemtype` <> 'Version'";
@@ -82,7 +81,8 @@ function plugin_init_customfields() {
             $ALL_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
             if ($data['enabled']) {
                $ACTIVE_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
-         	   Plugin::registerClass('PluginCustomfields' . $data['itemtype'], array('addtabon' => array($data['itemtype'])));
+         	   Plugin::registerClass('PluginCustomfieldsField',
+         	   array('addtabon' => array($data['itemtype'])));
             }
          }
 
