@@ -126,10 +126,10 @@ class PluginCustomfieldsField extends CommonDBTM {
       	case "DevicePci":
       		$customFieldsItemType = "PluginCustomfields" . $itemType;
       		$customFieldsItem = new $customFieldsItemType();
-				$ID = $item->getField("id");
-				// j affiche le formulaire
-				$customFieldsItem->showForm($ID);
-				break;
+            $ID = $item->getField("id");
+            // j affiche le formulaire
+            $customFieldsItem->showForm($ID);
+            break;
 		}
 		// TODO: Check if we must always return true 
 		return true;
@@ -189,7 +189,96 @@ class PluginCustomfieldsField extends CommonDBTM {
            	  $fieldName = $data['system_name'];
            	  $fieldDefaultValue = $associatedItemCustomValues[$fieldName];
       	     echo "<tr><td>" . $data['label'] . "</td><td>";
-      		  echo "<input name='$fieldName' value='$fieldDefaultValue' />";
+
+              $readonly = false;
+              if ($data['restricted']) {
+                  $checkfield = $data['itemtype'].'_'.$data['system_name'];
+                  $prof = new pluginCustomfieldsProfile();
+                  if (!$prof->fieldHaveRight($checkfield, 'r')) { continue; }
+                  if (!$prof->fieldHaveRight($checkfield, 'w')) {
+                      $readonly = true;
+                  }
+              }
+
+              if ($data['data_type'] != 'sectionhead') {
+                  $value = $associatedItemCustomValues[$fieldName];
+              }
+
+              switch ($data['data_type']) {
+                  case 'general' :
+                      if (!$readonly) {
+                          echo '<input type="text" size="20" value="'.$value
+                              .'" name="'.$fieldName.'"/>';
+                      } else {
+                          plugin_customfields_showValue($value);
+                      }
+                      break;
+
+                  case 'dropdown' :
+                      if (!$readonly) {
+//                     dropdownValue($fields['dropdown_table'], $field_name, $value);
+                          //Dropdown::show('Location', array('value'  => $value));
+                          $dropdown_obj = new PluginCustomfieldsDropdown;
+                          $tmp = $dropdown_obj->find("system_name = '"
+                          .$data['system_name']."'");
+                          $dropdown = array_shift($tmp);
+
+                          Dropdown::show('PluginCustomfieldsDropdownsItem', array(
+                              'condition' => $dropdown['id']." = plugin_customfields_dropdowns_id",
+                              'name'      => $fieldName,
+                              'value'     => $value,
+                              'entity'    => $_SESSION['glpiactive_entity']
+                          ));
+                      } else {
+//                     plugin_customfields_showValue(Dropdown::getDropdownName($fields['dropdown_table'],
+//                                                                             $value));
+                      }
+                      break;
+
+                  case 'date' :
+                      $editcalendar = !$readonly;
+                      Html::showDateFormItem($fieldName, $value, true,
+                          $editcalendar);
+                      break;
+
+                  case 'money' :
+                      if (!$readonly) {
+                          echo '<input type="text" size="16" value="'.Html::formatNumber($value, true).
+                              '" name="'.$fieldName.'"/>';
+                      } else {
+                          plugin_customfields_showValue(Html::formatNumber($value, true));
+                      }
+                      break;
+
+                  case 'yesno' :
+                      if (!$readonly) {
+                          Dropdown::showYesNo($fieldName, $value);
+                      } else {
+                          plugin_customfields_showValue(Dropdown::getYesNo
+                              ($fieldName, $value));
+                      }
+                      break;
+
+                  case 'text' : // only in effect if the condition about 40 lines above is removed
+                      if (!$readonly) {
+                          echo '<textarea name="'.$fieldName.'" rows="4"
+                          cols="35">'.$value.'</textarea>';
+                      } else {
+                          plugin_customfields_showValue($value, 'height:6em;width:23em;');
+                      }
+                      break;
+
+                  case 'number' :
+                      if (!$readonly) {
+                          echo '<input type="text" size="10" value="'.$value
+                              .'" name="'.$fieldName.'"/>';
+                      } else {
+                          plugin_customfields_showValue($value);
+                      }
+                      break;
+              }
+
+
       		  echo "</td></tr>";
         }
      }
@@ -206,6 +295,50 @@ class PluginCustomfieldsField extends CommonDBTM {
      echo "</table>";
 	  Html::closeForm();
   }
+
+    function post_addItem()
+    {
+
+        // Just call post_updateitem, because custom fields are not really
+        // "added"
+
+        $this->post_updateItem();
+    }
+
+    /**
+     * Add History Log after updating a custom field
+     *
+     * @param int $history
+     * @return nothing|void
+     */
+
+    function post_updateItem($history = 1)
+    {
+
+        $oldvalues=array();
+        $newvalues=array();
+
+        foreach ($this->updates as $field) {
+
+            array_push($oldvalues, $this->oldvalues[$field]. " ($field)");
+            array_push($newvalues, $this->fields[$field]. " ($field)");
+
+        }
+
+        Log::history(
+            $this->fields["id"],
+            $this->associatedItemType(),
+            [
+                0,
+                join(",", $oldvalues),
+                join(",", $newvalues)
+            ],
+            0,
+            Log::HISTORY_UPDATE_SUBITEM
+        );
+    }
+
+
 }
 
 ?>

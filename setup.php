@@ -72,7 +72,7 @@ function plugin_init_customfields() {
       
     if ($plugin->isInstalled("customfields") && $plugin->isActivated("customfields")) {
          include_once ('inc/virtual_classes.php');
-          
+
          $query = "SELECT `itemtype`, `enabled`
                    FROM `glpi_plugin_customfields_itemtypes`
                    WHERE `itemtype` <> 'Version'";
