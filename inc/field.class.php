@@ -124,8 +124,8 @@ class PluginCustomfieldsField extends CommonDBTM {
       	case "DeviceCase":
       	case "DevicePowerSupply":
       	case "DevicePci":
-      		$customFieldsItem = new PluginCustomfieldsField();
-            $customFieldsItem->itemType = $itemType;
+      		$customFieldsItemType = "PluginCustomfields" . $itemType;
+      		$customFieldsItem = new $customFieldsItemType();
             $ID = $item->getField("id");
             // j affiche le formulaire
             $customFieldsItem->showForm($ID);
@@ -151,7 +151,7 @@ class PluginCustomfieldsField extends CommonDBTM {
 	  $canedit = Session::haveRight("profile", "w");
 	     
 	  $itemType = $this->getType();
-	  $associatedItemType = $this->itemType;
+	  $associatedItemType = $this->associatedItemType();
 	  $table = $itemType::getTable();
 	  
 	  $sql = "SELECT *
@@ -201,7 +201,7 @@ class PluginCustomfieldsField extends CommonDBTM {
               }
 
               if ($data['data_type'] != 'sectionhead') {
-                  $value = $data[$fieldName];
+                  $value = $associatedItemCustomValues[$fieldName];
               }
 
               switch ($data['data_type']) {
