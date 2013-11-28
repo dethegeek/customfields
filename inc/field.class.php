@@ -295,6 +295,48 @@ class PluginCustomfieldsField extends CommonDBTM {
      echo "</table>";
 	  Html::closeForm();
   }
+   function post_addItem()
+   {
+   
+       // Just call post_updateitem, because custom fields are not really
+       // "added"
+   
+       $this->post_updateItem();
+   }
+   
+   /**
+    * Add History Log after updating a custom field
+    *
+    * @param int $history
+    * @return nothing|void
+    */
+   
+   function post_updateItem($history = 1)
+   {
+   
+       $oldvalues=array();
+       $newvalues=array();
+   
+       foreach ($this->updates as $field) {
+   
+           $oldvalues = $field. " (".$this->oldvalues[$field].")";
+           $newvalues = $field. " (".$this->fields[$field].")";
+   
+          Log::history(
+              $this->fields["id"],
+              $this->associatedItemType(),
+              [
+                  0,
+                  $oldvalues,
+                  $newvalues
+              ],
+              0,
+              Log::HISTORY_UPDATE_SUBITEM
+          );
+       }
+   
+   }
 }
+
 
 ?>
