@@ -1,6 +1,6 @@
 <?php
 /*
- ----------------------------------------------------------------------
+----------------------------------------------------------------------
 GLPI - Gestionnaire Libre de Parc Informatique
 Copyright (C) 2003-2009 by the INDEPNET Development Team.
 
@@ -37,17 +37,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------
 
 define('GLPI_ROOT', '../../..');
-include (GLPI_ROOT."/inc/includes.php");
+include(GLPI_ROOT . "/inc/includes.php");
 
 if (isset($_POST['update_customfield'])) {
-	if (isset($_POST['customfielditemtype']) && isset($_POST['id'])) {
-   	$customFieldsItemType = $_POST['customfielditemtype'];
-   	$customFieldsItem = new $customFieldsItemType();
-   	$customFieldsItem->getFromDB($_POST['id']);
-   	$customFieldsItem->update($_POST);
-		
-		//
-	}
+   if (isset($_POST['customfielditemtype']) && isset($_POST['id'])) {
+      $customFieldsItemType = $_POST['customfielditemtype'];
+      $customFieldsItem     = new $customFieldsItemType();
+      $customFieldsItem->getFromDB($_POST['id']);
+      $customFieldsItem->update($_POST);
+      
+      //
+   }
 }
 Html::back();
 ?>
