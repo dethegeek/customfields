@@ -179,11 +179,14 @@ class PluginCustomfieldsProfile extends CommonDBTM
    {
       global $LANG, $DB;
       
+      if (!Session::haveRight("profile","r")) return false;
+      
       $target = $this->getFormURL();
       if (isset($options['target'])) {
          $target = $options['target'];
       }
       
+      // TODO : Should be useless if we can use this->showFormHeader() and $this->ShowFormButtons()
       if (!Session::haveRight("profile", "w")) {
          return false;
       }
@@ -195,16 +198,6 @@ class PluginCustomfieldsProfile extends CommonDBTM
          $prof->getFromDB($ID);
       }
       
-      //      $prof = $this->getFromDBForProfile($profID);
-      /*
-      $prof    = new Profile();
-      
-      if ($ID) {
-      $this->getFromDB($ID);
-      $prof->getFromDB($ID);
-      }
-      */
-      
       $itemtype = '';
       
       $query = "SELECT *
@@ -212,10 +205,10 @@ class PluginCustomfieldsProfile extends CommonDBTM
                 WHERE `restricted` = 1
                 ORDER BY `itemtype`, `sort_order`;";
       
+     
       if (($result = $DB->query($query)) && $DB->numrows($result)) {
-         //echo "<form action='" . $target . "' method='post'>";
-         $this->showFormHeader($options);
-         //echo "<table class='tab_cadre_fixe'>";
+         echo "<form action='" . $target . "' method='post'>";
+         echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
          echo "<th colspan='4'>".$LANG['plugin_customfields']["title"]." ".
                $prof->fields["name"]."</th>";
@@ -244,10 +237,9 @@ class PluginCustomfieldsProfile extends CommonDBTM
             echo "<input type='submit' name='update_user_profile' value=\"" . _sx('button', 'Update') . "\" class='submit'>";
             echo "</td></tr>";
          }
-         //echo "</table>";
+         echo "</table>";
          $options['candel'] = false;
-         $this->showFormButtons($options);
-         //Html::closeForm();
+         Html::closeForm();
       } else {
          echo $LANG['plugin_customfields']['setup'][1];
       }
