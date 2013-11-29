@@ -73,6 +73,11 @@ function plugin_init_customfields()
       $plugin = new Plugin();
       
       if ($plugin->isInstalled("customfields") && $plugin->isActivated("customfields")) {
+         // enable a tab for reading / setting access rights for the plugin
+         Plugin::registerClass('PluginCustomfieldsProfile', 
+            array('addtabon' => 'Profile')
+         );
+      
          include_once('inc/virtual_classes.php');
          
          $query  = "SELECT `itemtype`, `enabled`

@@ -2,7 +2,7 @@
 function pluginCustomfieldsInstall()
 {
    global $DB, $LANG;
-   
+
    //Upgrade process if needed
    if (TableExists("glpi_plugin_customfields")) {
       

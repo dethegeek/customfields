@@ -53,13 +53,10 @@ class PluginCustomfieldsProfile extends CommonDBTM
    }
    
    
-   function createUserAccess($Profile)
+   function createUserAccess($profile)
    {
-      
-      return $this->add(array(
-         'id' => $Profile->getField('id'),
-         'name' => $Profile->getField('name')
-      ));
+      $this->add(array('id' => $profile->getField('id'),
+                              'name' => $profile->getField('name')));
    }
    
    
@@ -131,7 +128,52 @@ class PluginCustomfieldsProfile extends CommonDBTM
       return false;
    }
    
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType()=='Profile' && $item->getField('interface')!='helpdesk') {
+            return $LANG['plugin_customfields']['title'];
+      }
+      return '';
+   }
    
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      global $CFG_GLPI;
+      
+      if ($item->getType()=='Profile') {
+         $ID = $item->getField('id');
+         $prof = new self();
+         
+         if (!$prof->getFromDBByProfile($item->getField('id'))) {
+            $prof->createUserAccess($item);
+         }
+         $prof->showForm($item->getField('id'), array('target' => 
+                     $CFG_GLPI["root_doc"]."/plugins/customfields/front/profile.form.php"));
+      }
+      return true;
+   }
+   
+   function getFromDBByProfile($profiles_id) {
+      global $DB;
+
+      $ID_profile = 0;
+      // Get user profile
+      $query = "SELECT `id`
+                FROM `glpi_plugin_customfields_profiles`
+                WHERE `id` = '$ID'";
+
+      if ($result = $DB->query($query)) {
+         if ($DB->numrows($result)) {
+            $ID_profile = $DB->result($result,0,0);
+         }
+      }
+      if ($ID_profile) {
+         return $this->getFromDB($ID_profile);
+      }
+      return false;
+   }
+
+
    //profiles modification
    function showForm($ID, $options = array())
    {
@@ -171,12 +213,18 @@ class PluginCustomfieldsProfile extends CommonDBTM
                 ORDER BY `itemtype`, `sort_order`;";
       
       if (($result = $DB->query($query)) && $DB->numrows($result)) {
-         echo "<form action='" . $target . "' method='post'>";
-         echo "<table class='tab_cadre_fixe'>";
+         //echo "<form action='" . $target . "' method='post'>";
+         $this->showFormHeader($options);
+         //echo "<table class='tab_cadre_fixe'>";
+         echo "<tr class='tab_bg_2'>";
+         echo "<th colspan='4'>".$LANG['plugin_customfields']["title"]." ".
+               $prof->fields["name"]."</th>";
+         echo "</tr>";
+          
          while ($data = $DB->fetch_array($result)) {
             if ($data['itemtype'] != $itemtype) {
                $itemtype = $data['itemtype'];
-               echo "<tr><th colspan='2'>" . $LANG['plugin_customfields']['device_type'][$itemtype] . "</th></tr>";
+               echo "<tr><th colspan='3'>" . __($itemtype) . "</th></tr>";
             }
             $profile_field = $data['itemtype'] . '_' . $data['system_name'];
             echo "<tr class='tab_bg_2'><td>" . $data['label'] . " (" . $LANG['plugin_customfields'][$data['data_type']] . "):</td><td>";
@@ -196,8 +244,10 @@ class PluginCustomfieldsProfile extends CommonDBTM
             echo "<input type='submit' name='update_user_profile' value=\"" . _sx('button', 'Update') . "\" class='submit'>";
             echo "</td></tr>";
          }
-         echo "</table>";
-         Html::closeForm();
+         //echo "</table>";
+         $options['candel'] = false;
+         $this->showFormButtons($options);
+         //Html::closeForm();
       } else {
          echo $LANG['plugin_customfields']['setup'][1];
       }
