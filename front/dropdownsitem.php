@@ -31,12 +31,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Original Author of file: Ryan Foster
 // Contact: Matt Hoover <dev@opensourcegov.net>
 // Project Website: http://www.opensourcegov.net
-// Purpose of file: 
+// Purpose of file: List of custom dropdown items
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
-include (GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
 $dropdown = new PluginCustomfieldsDropdownsItem();
+
+// Reuse the standard list for our custom dropdowns
+
 include (GLPI_ROOT . "/front/dropdown.common.php");
-?>

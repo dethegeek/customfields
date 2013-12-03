@@ -30,7 +30,7 @@
 
 // ----------------------------------------------------------------------
 // Original Author of file: Julien Dombre
-// Purpose of file:
+// Purpose of file: Update Profile for custom fields
 // ----------------------------------------------------------------------
 
 define('GLPI_ROOT', '../../..');
@@ -40,6 +40,7 @@ Session::checkRight("profile", "r");
 $prof = new pluginCustomfieldsProfile();
 
 //Save profile
+
 if (isset($_POST['update_user_profile'])) {
    $prof->update($_POST);
    Html::redirect($_SERVER['HTTP_REFERER']);

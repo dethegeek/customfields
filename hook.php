@@ -35,14 +35,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Purpose of file: Code for hooks, etc.
 // ----------------------------------------------------------------------
 
-// Define dropdown relations for use by GLPI
+// ** DATABASE HOOKS ** //
+
+/**
+ * Define dropdown relations for use by GLPI
+ *
+ * @return Array Relations from the dropdowns
+ */
+
 function plugin_customfields_getDatabaseRelations()
 {
    //TODO: add in relations for multiselects?
    global $DB;
-   
+
    $plugin = new Plugin();
-   
+
    $relations = array();
    $query     = "SELECT *
              FROM `glpi_plugin_customfields_fields`
@@ -51,19 +58,19 @@ function plugin_customfields_getDatabaseRelations()
                    AND `data_type` = 'dropdown'
              ORDER BY `itemtype`";
    $result    = $DB->query($query);
-   
+
    while ($data = $DB->fetch_assoc($result)) {
       $relations[$data['dropdown_table']] = array(
          plugin_customfields_table($data['itemtype']) => $data['system_name']
       );
    }
-   
+
    $entities = array();
    $query    = "SELECT `dropdown_table`
              FROM `glpi_plugin_customfields_dropdowns`
              WHERE `has_entities` = 1";
    $result   = $DB->query($query);
-   
+
    while ($data = $DB->fetch_assoc($result)) {
       $entities[$data['dropdown_table']] = 'entities_id';
    }
@@ -73,41 +80,20 @@ function plugin_customfields_getDatabaseRelations()
    return $relations;
 }
 
+// ** SEARCH HOOKS ** //
 
-// Define dropdown tables to be managed in GLPI
-function plugin_customfields_getDropdown()
-{
-   global $DB, $LANG;
-   
-   $plugin = new Plugin();
-   
-   if ($plugin->isActivated("customfields")) {
-      /*$dropdowns = array();
-      
-      $query = "SELECT *
-      FROM `glpi_plugin_customfields_dropdowns`";
-      $result = $DB->query($query);
-      
-      while ($data=$DB->fetch_assoc($result)) {
-      $dropdowns[getItemTypeForTable($data['dropdown_table'])] = $data['label'];
-      }
-      return $dropdowns;*/
-      return array(
-         'PluginCustomfieldsDropdownsItem' => $LANG['plugin_customfields']['Custom_Dropdown']
-      );
-   }
-   return array();
-}
-
-/////////// SEARCH FUNCTIONS ////////////
-
-// Define search options for each device type that has custom fields.
-// 'Search options' are also used by GLPI for logging and mass updates.
+/**
+ * Define search options for each device type that has custom fields.
+ * 'Search options' are also used by GLPI for logging and mass updates.
+ *
+ * @param $itemtype Item type
+ * @return array Search options
+ */
 
 function plugin_customfields_getAddSearchOptions($itemtype)
 {
    global $LANG, $ACTIVE_CUSTOMFIELDS_TYPES, $DB;
-   
+
    //TODO: Rewrite this function, based on old code
    //--but note that logging appears to work w/o separate item
    $sopt = array();
@@ -124,21 +110,23 @@ function plugin_customfields_getAddSearchOptions($itemtype)
                   `glpi_plugin_customfields_fields`.`sort_order`,
                   `glpi_plugin_customfields_fields`.`id`,
                   `glpi_plugin_customfields_fields`.`label`";
-      
+
       $i = 5200;
       foreach ($DB->request($query) as $search) {
          /** 2 options created :
           * - one for search and displaypreference
           * - second for massive action
           **/
-         
+
          $sopt[$i]['table']         = plugin_customfields_table($itemtype);
          $sopt[$i]['field']         = $search['system_name'];
          $sopt[$i]['linkfield']     = '';
-         $sopt[$i]['name']          = $LANG['plugin_customfields']['title'] . " - " . $search['label'];
+         $sopt[$i]['name']          = $LANG['plugin_customfields']['title']
+            . " - " . $search['label'];
          $sopt[$i]['massiveaction'] = false;
-         //PS Add
+
          $sopt[$i]['injectable']    = true;
+
          if ($search['data_type'] == "general") {
             $opt[$i]['checktype']   = "text";
             $opt[$i]['displaytype'] = "text";
@@ -159,7 +147,7 @@ function plugin_customfields_getAddSearchOptions($itemtype)
             $opt[$i]['checktype']   = "float";
             $opt[$i]['displaytype'] = "decimal";
          }
-         if ($search['data_type'] == "note") { //this is a notepad, equivalency ?
+         if ($search['data_type'] == "note") {
             $opt[$i]['checktype']   = "multiline_text";
             $opt[$i]['displaytype'] = "multiline_text";
          }
@@ -170,19 +158,21 @@ function plugin_customfields_getAddSearchOptions($itemtype)
          if ($search['data_type'] == "sectionhead") {
             $opt[$i]['injectable'] = false;
          }
-         
-         //no option for disable displaypreferences, check page executed
+
+         // No option for disable displaypreferences, check page executed
+
          if (strpos($_SERVER['SCRIPT_NAME'], "common.tabs.php") === false) {
-            $sopt[$i + 2000]['table']     = plugin_customfields_table($itemtype);
+            $sopt[$i + 2000]['table'] = plugin_customfields_table($itemtype);
             $sopt[$i + 2000]['field']     = $search['system_name'];
             $sopt[$i + 2000]['linkfield'] = $search['system_name'];
-            $sopt[$i + 2000]['name']      = $LANG['plugin_customfields']['title'] . " - " . $search['label'];
+            $sopt[$i + 2000]['name']  = $LANG['plugin_customfields']['title']
+               . " - " . $search['label'];
             $sopt[$i + 2000]['nosearch']  = true;
             $sopt[$i + 2000]['nosort']    = true;
          }
-         
+
          if ($search['data_type'] == "dropdown") {
-            
+
             $sopt[$i]['table']      = 'glpi_plugin_customfields_dropdownsitems';
             $sopt[$i]['datatype']   = "itemtypename";
             $sopt[$i]['searchtype'] = "contains";
@@ -200,62 +190,41 @@ function plugin_customfields_getAddSearchOptions($itemtype)
          $i++;
       }
    }
-   
+
    return $sopt;
+
 }
 
+/**
+ * Define how to join the tables when doing a search
+ *
+ * @see Search::addLeftJoin()
+ */
 
-// Clean Search Options: Necessary for search to work properly if GLPI patch applied.
-// Removes the search options that are used for different purposes.
-// This function requires the glpi patch in order to be called. 
-// See the patch directory for instructions.
-function plugin_customfields_cleanSearchOption($options, $action)
-{
-   //TODO: update this after finishing getAddSearchOptions
-   if (!empty($options)) {
-      foreach ($options as $ID => $value) {
-         if (is_array($value) && isset($value['purpose'])) {
-            // If action is 'r' we are cleaning before a search.
-            // If action is 'w', we are cleaning before an update.
-            if ($value['purpose'] == 'log') {
-               unset($options[$ID]);
-            } elseif ($value['purpose'] == 'search' && $action == 'w') {
-               unset($options[$ID]);
-            } elseif ($value['purpose'] == 'update' && $action == 'r') {
-               unset($options[$ID]);
-            }
-         }
-      }
-   }
-   
-   return $options;
-}
+function plugin_customfields_addLeftJoin(
+   $itemtype,
+   $ref_table,
+   $new_table,
+   $linkfield,
+   &$already_link_tables
+) {
 
-// Define how to join the tables when doing a search
-function plugin_customfields_addLeftJoin($itemtype, $ref_table, $new_table, $linkfield, &$already_link_tables)
-{
    global $DB;
    
    $out = "";
+
+   // Join data table
    
    $type_table = plugin_customfields_table($itemtype);
+
    if ($new_table == $type_table) {
       $out = " LEFT JOIN `$new_table`
                   ON (`$ref_table`.`id` = `$new_table`.`id`)";
       return $out;
    }
-   
-   
-   
-   if ($new_table == 'glpi_plugin_customfields_networkports') {
-      $out = addLeftJoin($itemtype, $ref_table, $already_link_tables, "glpi_networkports", '');
-      $out .= " LEFT JOIN `glpi_plugin_customfields_networkports`
-                  ON (`glpi_networkports`.`id` = `glpi_plugin_customfields_networkports`.`id`) ";
-      return $out;
-   }
-   
-   
-   // it is a custom dropdown
+
+   // Join a custom dropdown
+
    $query  = "SELECT *
              FROM `glpi_plugin_customfields_fields`
              WHERE `dropdown_table` = '$new_table'
@@ -264,29 +233,37 @@ function plugin_customfields_addLeftJoin($itemtype, $ref_table, $new_table, $lin
                    AND `entities` != ''";
    $result = $DB->query($query);
    $out    = "";
-   // A regular dropdown (this fails if the same dd is used in the device AND in networking ports)
+
    if ($DB->numrows($result)) {
-      $out .= addLeftJoin($itemtype, $ref_table, $already_link_tables, $type_table, 'id');
-      $out .= " LEFT JOIN `$new_table` ON (`$new_table`.`id` = `$type_table`.`$linkfield`) ";
-      
-   } else { // a dropdown in network ports
-      // Link to glpi_networking_ports first
-      /*$out  = addLeftJoin($itemtype, $ref_table, $already_link_tables, "glpi_networkports", '');
-      $out .= addLeftJoin('NetworkPort', 'glpi_networkports', $already_link_tables,
-      "glpi_plugin_customfields_networkports", 'id');
+      $out .= addLeftJoin(
+         $itemtype,
+         $ref_table,
+         $already_link_tables,
+         $type_table,
+         'id'
+      );
+
       $out .= " LEFT JOIN `$new_table`
-      ON (`glpi_plugin_customfields_networkports`.`$linkfield` = `$new_table`.`id`) ";*/
+      ON (`$new_table`.`id` = `$type_table`.`$linkfield`) ";
+      
    }
+
    return $out;
+
 }
 
+// ** VARIOUS HOOKS ** //
 
+/**
+ * Hook to process Mass Update & transfer
+ *
+ * @param $item Item
+ * @return object unmodified item (we only update our custom fields)
+ */
 
-///////////// VARIOUS HOOKS /////////////////
-
-// Hook to process Mass Update & transfer
 function plugin_pre_item_update_customfields($item)
 {
+
    global $ACTIVE_CUSTOMFIELDS_TYPES;
    
    if (empty($ACTIVE_CUSTOMFIELDS_TYPES)) {
@@ -294,43 +271,41 @@ function plugin_pre_item_update_customfields($item)
    }
    
    // If update isn't set, then this is a mass update or transfer, not a regular update
-   if (!isset($item->input['_already_called_']) && in_array($item->getType(), $ACTIVE_CUSTOMFIELDS_TYPES)) {
-      
-      $cf_itemtype      = getItemTypeForTable(plugin_customfields_table($item->getType()));
-      //spl_autoload_register("cf_autoload");
+   if (
+      !isset($item->input['_already_called_']) &&
+      in_array($item->getType(), $ACTIVE_CUSTOMFIELDS_TYPES)
+   ) {
+
+      // Instantiate custom field object
+
+      $cf_itemtype      = getItemTypeForTable(
+         plugin_customfields_table($item->getType())
+      );
+
       $plugin_custfield = new $cf_itemtype;
-      
-      // mass update or tranfer, possibly affecting one of our custom fields
-      /*$updates = array();
-      $plugdropdown = new PluginCustomfieldsDropdown();
-      if (isset($item->input['entities_id'])) {// the item is being transfered to another entity
-      $updates = $plugdropdown->transferAllDropdowns($item->input['id'], $item->getType(),
-      $item->input['entities_id']);
-      }*/
-      
-      $type    = new PluginCustomfieldsItemtype($item->getType());
-      $newdata = array();
-      foreach ($item->input as $key => $val) {
-         if (substr($key, 0, 3) == 'cf_') {
-            $newdata[$key] = $item->input[$key];
-            unset($item->input[$key]);
-         }
-      }
-      $newdata['id']               = $item->input['id'];
-      $newdata['_already_called_'] = true;
       $plugin_custfield->update($item->input);
+
    }
+
+   // return the original data, not our additional data
    
-   return $item; // return the original data, not our additional data
+   return $item;
+
 }
 
+/**
+ * Hook done on add item case
+ * If in Auto Activate mode, add a record for the custom fields when a device
+ * is added
+ *
+ * @param $obj Object to be added
+ * @return bool Success
+ */
 
-
-// Hook done on add item case
-// If in Auto Activate mode, add a record for the custom fields when a device is added
 function plugin_item_add_customfields($obj)
 {
    global $DB, $ACTIVE_CUSTOMFIELDS_TYPES;
+
    $type = get_class($obj);
    $id   = $obj->fields['id'];
    
@@ -349,141 +324,117 @@ function plugin_item_add_customfields($obj)
 }
 
 
-// Hook done on purge item case
+/**
+ * Hook done on purge item case
+ *
+ * FIXME Doesn't work! See issue #11
+ *
+ * @param $parm Object to be purged
+ * @return bool Success
+ */
+
 function plugin_item_purge_customfields($parm)
 {
    global $ALL_CUSTOMFIELDS_TYPES;
    
    // Must delete custom fields when main item is purged, 
    // even if custom fields for this device are currently disabled
-   if (in_array($parm->getType(), $ALL_CUSTOMFIELDS_TYPES) && ($table = plugin_customfields_table($parm->getType()))) {
+   if (
+      in_array($parm->getType(), $ALL_CUSTOMFIELDS_TYPES)
+      && ($table = plugin_customfields_table($parm->getType()))
+   ) {
       
       $parm->delete(array(
          'id' => $parm->getID()
       ));
       return true;
+
    }
+
    return false;
 }
 
-// This function requires the glpi patch in order to be called. 
-// See the patch directory for instructions
+/**
+ * Display fields for massive actions
+ *
+ * @param array $options Massive Actions options
+ * @return bool Success
+ */
+
 function plugin_customfields_MassiveActionsFieldsDisplay($options = array())
 {
    global $DB;
-   
+
    $type      = $options['itemtype'];
    $table     = $options['options']['table'];
    $field     = $options['options']['field'];
    $linkfield = $options['options']['linkfield'];
-   
-   
+
+   // Get configuration of the custom field
+
    $query  = "SELECT *
              FROM `glpi_plugin_customfields_fields`
              WHERE `itemtype` = '$type'
                    AND `system_name` = '$field'";
    $result = $DB->query($query);
-   
-   
+
    if ($data = $DB->fetch_assoc($result)) {
+
       switch ($data['data_type']) {
          case 'dropdown':
             $dropdown_obj = new PluginCustomfieldsDropdown;
-            $tmp          = $dropdown_obj->find("system_name = '" . $data['system_name'] . "'");
+            $tmp          = $dropdown_obj->find(
+               "system_name = '" . $data['system_name'] . "'"
+            );
+
             $dropdown     = array_shift($tmp);
-            Dropdown::show('PluginCustomfieldsDropdownsItem', array(
-               'condition' => $dropdown['id'] . " = plugin_customfields_dropdowns_id",
-               'name' => $data['system_name'],
-               'entity' => $_SESSION['glpiactive_entity']
-            ));
+
+            Dropdown::show(
+               'PluginCustomfieldsDropdownsItem',
+               array(
+                  'condition' => $dropdown['id']
+                     . " = plugin_customfields_dropdowns_id",
+                  'name' => $data['system_name'],
+                  'entity' => $_SESSION['glpiactive_entity']
+               )
+            );
             break;
-         
+
          case 'yesno':
             dropdown::showYesNo($field, 0);
             break;
-         
+
          case 'date':
             Html::showDateFormItem($field, '', true, true);
             break;
-         
+
          case 'money':
-            echo '<input type="text" size="16" value="' . Html::formatNumber(0, true) . '" name="' . $field . '"/>';
+            echo '<input type="text" size="16" value="'
+               . Html::formatNumber(0, true)
+               . '" name="'
+               . $field
+               . '"/>';
             break;
-         
+
          default:
             $item = new $type;
             Html::autocompletionTextField($item, $field);
             break;
       }
+
       return true;
-   } else {
-      return false;
-   }
-}
 
-
-// Define headings added by the plugin -- determines if a tab should be shown or not
-function plugin_get_headings_customfields($item, $withtemplate)
-{
-   global $LANG, $ACTIVE_CUSTOMFIELDS_TYPES;
-   
-   $type = get_Class($item);
-   
-   if (($type == 'Profile' && $item->fields['interface'] != 'helpdesk') || !empty($ACTIVE_CUSTOMFIELDS_TYPES) && in_array($type, $ACTIVE_CUSTOMFIELDS_TYPES)) {
-      
-      $ID = $item->getField('id');
-      if (!$withtemplate || !$item->isNewID($ID)) {
-         return array(
-            1 => $LANG['plugin_customfields']['title']
-         );
-      }
    }
+
    return false;
+
 }
 
-
-// Define headings actions added by the plugin -- what happens when you click on the tab
-function plugin_headings_actions_customfields($item)
-{
-   global $ACTIVE_CUSTOMFIELDS_TYPES;
-   
-   $type = get_class($item);
-   
-   if (($type == 'Profile' && $item->getField('interface') == 'central') || !empty($ACTIVE_CUSTOMFIELDS_TYPES) && in_array($type, $ACTIVE_CUSTOMFIELDS_TYPES)) {
-      
-      return array(
-         1 => 'plugin_headings_customfields'
-      );
-   }
-   return false;
-}
-
-
-// customfields of an action heading -- show the custom fields
-function plugin_headings_customfields($item)
-{
-   global $CFG_GLPI;
-   
-   $ID   = $item->getField('id');
-   $type = get_class($item);
-   
-   if ($type == 'Profile') {
-      $prof = new PluginCustomfieldsProfile();
-      if ($prof->GetfromDB($ID) || $prof->createUserAccess($item)) {
-         $prof->showForm($ID, array(
-            'target' => $CFG_GLPI["root_doc"] . "/plugins/customfields/front/profile.form.php"
-         ));
-      }
-      
-   } else {
-      if ($ID > 0) {
-         echo '<div class="center">';
-         echo plugin_customfields_showAssociated($item);
-         echo '</div>';
-      }
-   }
-}
-
+/**
+ * Display items from the search.
+ *
+ * @see Search::giveItem()
+ */
 
 function plugin_customfields_giveItem($itemtype, $ID, $data, $num, $meta = 0)
 {
@@ -506,10 +457,16 @@ function plugin_customfields_giveItem($itemtype, $ID, $data, $num, $meta = 0)
    if (strpos($table, "glpi_plugin_customfields_dropdownsitems") !== false) {
       switch ($field) {
          case "plugin_customfields_dropdowns_id":
-            return Dropdown::getDropdownName("glpi_plugin_customfields_dropdowns", $data[$NAME . $num]);
+            return Dropdown::getDropdownName(
+               "glpi_plugin_customfields_dropdowns",
+               $data[$NAME . $num]
+            );
             break;
          case "plugin_customfields_dropdownsitems_id":
-            return Dropdown::getDropdownName("glpi_plugin_customfields_dropdownsitems", $data[$NAME . $num]);
+            return Dropdown::getDropdownName(
+               "glpi_plugin_customfields_dropdownsitems",
+               $data[$NAME . $num]
+            );
             break;
          case "name":
             return $data[$NAME . $num];
@@ -525,7 +482,10 @@ function plugin_customfields_giveItem($itemtype, $ID, $data, $num, $meta = 0)
       if ($data_db = $DB->fetch_assoc($result)) {
          switch ($data_db['data_type']) {
             case 'dropdown':
-               return Dropdown::getDropdownName("glpi_plugin_customfields_dropdownsitems", $data[$NAME . $num]);
+               return Dropdown::getDropdownName(
+                  "glpi_plugin_customfields_dropdownsitems",
+                  $data[$NAME . $num]
+               );
                break;
             
             case 'yesno':
@@ -544,12 +504,22 @@ function plugin_customfields_giveItem($itemtype, $ID, $data, $num, $meta = 0)
             default:
                return $data[$NAME . $num];
                break;
+
          }
+
       }
+
    }
+
 }
 
+// ** SETUP HOOKS ** //
 
+/**
+ * Install Custom fields plugin
+ *
+ * @return bool Success
+ */
 
 function plugin_customfields_install()
 {
@@ -557,17 +527,14 @@ function plugin_customfields_install()
    return pluginCustomfieldsInstall();
 }
 
+/**
+ * Uninstall custom fields plugin
+ *
+ * @return bool Success
+ */
 
 function plugin_customfields_uninstall()
 {
    include_once(GLPI_ROOT . "/plugins/customfields/inc/install.function.php");
    return pluginCustomfieldsUninstall();
 }
-
-function plugin_datainjection_populate_customfields()
-{
-   global $INJECTABLE_TYPES;
-   
-   $INJECTABLE_TYPES['PluginCustomFieldsCustomFieldInjection'] = 'customfields';
-}
-?>

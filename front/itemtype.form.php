@@ -32,12 +32,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Original Author of file: Ryan Foster
 // Contact: Matt Hoover <dev@opensourcegov.net>
 // Project Website: http://www.opensourcegov.net
-// Purpose of file: Perform update, activate, and delete actions
+// Purpose of file: Perform update, add, and delete actions
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
-
-include(GLPI_ROOT . '/inc/includes.php');
+include ('../../../inc/includes.php');
 
 if (!isset($_GET['id'])) {
    $_GET['id'] = '';
@@ -47,20 +45,33 @@ if (!isset($_GET['withtemplate'])) {
 }
 
 if (isset($_POST['delete'])) {
+
+   // Delete custom field
+
    $PluginItem = new PluginCustomfieldsItemtype($_REQUEST['itemtype']);
    $PluginItem->check($_POST['id'], 'w');
    $PluginItem->delete($_POST);
    Html::redirect($_SERVER['HTTP_REFERER']);
    
 } elseif (isset($_POST['update'])) {
+
+   // Update custom field
+
    $PluginItem = new PluginCustomfieldsItemtype($_REQUEST['itemtype']);
    $PluginItem->update($_POST);
    Html::redirect($_SERVER['HTTP_REFERER']);
    
-} elseif (isset($_GET['add']) && isset($_REQUEST['itemtype']) && isset($_GET['id'])) {
+} elseif (
+   isset($_GET['add']) &&
+   isset($_REQUEST['itemtype']) &&
+   isset($_GET['id'])
+) {
+
+   // Add custom field
+
    $PluginItem = new PluginCustomfieldsItemtype($_REQUEST['itemtype']);
    $PluginItem->getRestricted($_REQUEST['itemtype']);
    $newID = $PluginItem->add($_GET, false);
    Html::redirect($_SERVER['HTTP_REFERER']);
+
 }
-?>
