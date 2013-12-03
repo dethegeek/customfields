@@ -154,7 +154,7 @@ function plugin_version_customfields()
       'author' => 'Oregon State Data Center, Nelly Mahu Lasson',
       'license' => 'GPLv2+',
       'homepage' => 'https://forge.indepnet.net/projects/show/customfields',
-      'minGlpiVersion' => '0.83.3',
+      'minGlpiVersion' => '0.84',
       'version' => '1.5'
    );
 }
