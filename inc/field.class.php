@@ -149,10 +149,66 @@ class PluginCustomfieldsField extends CommonDBTM
       }
       
       if (!Session::haveRight("profile", "r")) {
-         return false;
+         //return false;
+      }
+
+      switch ($this->associatedItemType()) {
+         case "Computer":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+         case "ComputerDisk":
+         case "DeviceProcessor":
+         case "DeviceMemory":
+         case "DeviceMotherboard":
+         case "DeviceNetworkCard":
+         case "DeviceHardDrive":
+         case "DeviceDrive":
+         case "DeviceControl":
+         case "DeviceGraphicCard":
+         case "DeviceSoundCard":
+         case "DeviceCase":
+         case "DevicePowerSupply":
+         case "DevicePci":
+            $canedit = Session::haveRight("device", "w");
+            break;
+         case "Monitor":
+         case "Software":
+         case "NetworkEquipment":
+         case "Peripheral":
+         case "Printer":
+         case "CartridgeItem":
+         case "ConsumableItem":
+         case "Phone":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
+         case "Supplier":
+         case "Contact":
+            $canedit = Session::haveRight("contact_enterprise", "w");
+            break;
+         case "SoftwareVersion":
+         case "SoftwareLicense":
+            $canedit = Session::haveRight("software", "w");
+            break;
+         case "Ticket":
+            
+            break;
+         case "Contract":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
+         case "Document":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
+         case "User":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
+         case "Group":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
+         case "Entity":
+            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            break;
       }
       
-      $canedit = Session::haveRight("profile", "w");
+      //$canedit = Session::haveRight("profile", "w");
       
       $itemType           = $this->getType();
       $associatedItemType = $this->associatedItemType();
@@ -324,11 +380,11 @@ class PluginCustomfieldsField extends CommonDBTM
          
          Log::history($this->fields["id"], 
             $this->associatedItemType(), 
-            [
+            array(
                0,
                $oldvalues,
                $newvalues
-            ],
+            ),
             0, 
             Log::HISTORY_UPDATE_SUBITEM);
       }
