@@ -155,6 +155,7 @@ class PluginCustomfieldsField extends CommonDBTM
       switch ($this->associatedItemType()) {
          case "Computer":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
          case "ComputerDisk":
          case "DeviceProcessor":
          case "DeviceMemory":
@@ -169,6 +170,7 @@ class PluginCustomfieldsField extends CommonDBTM
          case "DevicePowerSupply":
          case "DevicePci":
             $canedit = Session::haveRight("device", "w");
+            $canread = Session::haveRight("device", "r");
             break;
          case "Monitor":
          case "Software":
@@ -179,33 +181,33 @@ class PluginCustomfieldsField extends CommonDBTM
          case "ConsumableItem":
          case "Phone":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
             break;
          case "Supplier":
          case "Contact":
             $canedit = Session::haveRight("contact_enterprise", "w");
+            $canread = Session::haveRight("contact_enterprise", "r");
             break;
          case "SoftwareVersion":
          case "SoftwareLicense":
             $canedit = Session::haveRight("software", "w");
+            $canread = Session::haveRight("software", "r");
             break;
          case "Ticket":
-            
+            $canedit = Session::haveRight("update_ticket", "1");
+            $canread = true;
             break;
          case "Contract":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            break;
          case "Document":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            break;
          case "User":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            break;
          case "Group":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
+            $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
             break;
-         case "Entity":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            break;
+      }
+      
+      if ($canread != true) {
+         return false;
       }
       
       //$canedit = Session::haveRight("profile", "w");
