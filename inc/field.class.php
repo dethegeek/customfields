@@ -154,8 +154,21 @@ class PluginCustomfieldsField extends CommonDBTM
 
       switch ($this->associatedItemType()) {
          case "Computer":
+         case "Contract":
+         case "Document":
+         case "User":
+         case "Group":
+         case "Monitor":
+         case "Software":
+         case "NetworkEquipment":
+         case "Peripheral":
+         case "Printer":
+         case "CartridgeItem":
+         case "ConsumableItem":
+         case "Phone":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
             $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
+            break;
          case "ComputerDisk":
          case "DeviceProcessor":
          case "DeviceMemory":
@@ -172,17 +185,6 @@ class PluginCustomfieldsField extends CommonDBTM
             $canedit = Session::haveRight("device", "w");
             $canread = Session::haveRight("device", "r");
             break;
-         case "Monitor":
-         case "Software":
-         case "NetworkEquipment":
-         case "Peripheral":
-         case "Printer":
-         case "CartridgeItem":
-         case "ConsumableItem":
-         case "Phone":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
-            break;
          case "Supplier":
          case "Contact":
             $canedit = Session::haveRight("contact_enterprise", "w");
@@ -196,13 +198,6 @@ class PluginCustomfieldsField extends CommonDBTM
          case "Ticket":
             $canedit = Session::haveRight("update_ticket", "1");
             $canread = true;
-            break;
-         case "Contract":
-         case "Document":
-         case "User":
-         case "Group":
-            $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
-            $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
             break;
       }
       
