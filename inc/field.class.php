@@ -511,11 +511,11 @@ class PluginCustomfieldsField extends CommonDBTM
          Log::history(
             $this->fields["id"],
             $this->associatedItemType(), 
-            [
+            array(
                0,
                $oldvalues,
                $newvalues
-            ],
+            ),
             0, 
             Log::HISTORY_UPDATE_SUBITEM
          );
