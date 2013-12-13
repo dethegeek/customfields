@@ -29,46 +29,65 @@
 
 // ----------------------------------------------------------------------
 // Original Author of file: Walid Nouh
-// Purpose of file:
+// Purpose of file: Handle calls from the Data injection plugin
 // ----------------------------------------------------------------------
 
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-/// PluginCustomFieldsCustomFieldInjection class
-class PluginCustomFieldsCustomFieldInjection extends PluginCustomFieldsCustomField implements PluginDatainjectionInjectionInterface
+/**
+ * Class PluginCustomFieldsCustomFieldInjection
+ *
+ * This class adds support for the Data injection plugin handling import of
+ * custom fields.
+ */
+
+class PluginCustomFieldsCustomFieldInjection
+   extends PluginCustomFieldsCustomField
+   implements PluginDatainjectionInjectionInterface
 {
-   
-   
+
+   /**
+    * Constructor. Set table
+    */
+
    function __construct()
    {
-      //Needed for getSearchOptions !
+
+      // Needed for getSearchOptions
+
       $this->table = getTableForItemType('PluginCustomFieldsCustomField');
+
    }
-   
-   
+
+   /**
+    * @see PluginDatainjectionInjectionInterface::isPrimaryType()
+    */
+
    function isPrimaryType()
    {
       return true;
    }
-   
+
+   /**
+    * @see PluginDatainjectionInjectionInterface::connectedTo()
+    */
    
    function connectedTo()
    {
       return array();
    }
-   
-   
+
+   /**
+    * @see PluginDatainjectionInjectionInterface::getOptions()
+    */
+
    function getOptions($primary_type = '')
    {
       
       $tab = Search::getOptions(get_parent_class($this));
-      echo "TAB = '$tab'";
-      //Specific to location
-      //$tab[3]['linkfield'] = 'locations_id';
-      //$blacklist = PluginDatainjectionCommonInjectionLib::getBlacklistedOptions();
-      //Remove some options because some fields cannot be imported
+
       $notimportable            = array(
          5,
          9,
@@ -98,8 +117,11 @@ class PluginCustomFieldsCustomFieldInjection extends PluginCustomFieldsCustomFie
          139,
          140
       );
+
       $options['ignore_fields'] = $notimportable;
+
       $options['displaytype']   = array(
+
          "dropdown" => array(
             2,
             32,
@@ -108,25 +130,34 @@ class PluginCustomFieldsCustomFieldInjection extends PluginCustomFieldsCustomFie
             49,
             10
          ),
+
          "user" => array(
             6,
             24
          ),
+
          "multiline_text" => array(
             4
          ),
+
          "date" => array(
             9
          ),
+
          "bool" => array(
             11,
             7
          )
       );
       
-      $tab = PluginDatainjectionCommonInjectionLib::addToSearchOptions($tab, $options, $this);
+      $tab = PluginDatainjectionCommonInjectionLib::addToSearchOptions(
+         $tab,
+         $options,
+         $this
+      );
       
       return $tab;
+
    }
    
    

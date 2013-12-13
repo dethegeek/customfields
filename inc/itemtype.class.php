@@ -32,26 +32,42 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Original Author of file: Ryan Foster
 // Contact: Matt Hoover <dev@opensourcegov.net>
 // Project Website: http://www.opensourcegov.net
-// Purpose of file: Create a class to take advantage of core features
-// such as update and logging.
+// Purpose of file: Customfields itemtype configuration
 // ----------------------------------------------------------------------
 
 if (!defined('GLPI_ROOT')) {
    die('Sorry. You can\'t access this file directly.');
 }
 
-// CLASS customfields
+/**
+ * Class PluginCustomfieldsItemtype
+ *
+ * Customfields itemtype configuration
+ */
+
 class PluginCustomfieldsItemtype extends CommonDBTM
 {
-   
+
+   /**
+    * Constructor. Adds itemtype and various initialisations.
+    *
+    * @param string $itemtype
+    */
+
    function __construct($itemtype = "")
    {
       $this->type      = $itemtype;
       $this->dohistory = true;
       $this->forceTable(plugin_customfields_table($itemtype));
    }
-   
-   
+
+   /**
+    * Check access restrictions to this item
+    *
+    * @param $itemtype
+    * @return bool
+    */
+
    function getRestricted($itemtype)
    {
       global $DB;
@@ -77,29 +93,5 @@ class PluginCustomfieldsItemtype extends CommonDBTM
       }
       
    }
-   
-   static function registerItemtype($itemtype)
-   {
-      global $DB, $ALL_CUSTOMFIELDS_TYPES;
-      if (!countElementsInTable('glpi_plugin_customfields_itemtypes', "`itemtype`='PluginSimcardSimcard'")) {
-         $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
-                       (`itemtype`) VALUES ('$itemtype')";
-         $DB->query($query) or die("Cannot add $itemtype to customfields");
-      }
-      array_push($ALL_CUSTOMFIELDS_TYPES, $itemtype);
-   }
-   
-   static function unregisterItemtype($itemtype)
-   {
-      global $DB;
-      $DB->query("DROP TABLE IF EXISTS `plugin_customfields_table($itemtype)`");
-      $query = "DELETE FROM `glpi_plugin_customfields_fields`
-                WHERE `itemtype`='$itemtype'";
-      $DB->query($query);
-      $query = "DELETE FROM `glpi_plugin_customfields_itemtypes`
-                WHERE `itemtype`='$itemtype'";
-      $DB->query($query);
-   }
-}
 
-?>
+}

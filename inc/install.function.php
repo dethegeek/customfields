@@ -1,40 +1,98 @@
 <?php
+
+/*
+----------------------------------------------------------------------
+GLPI - Gestionnaire Libre de Parc Informatique
+Copyright (C) 2003-2009 by the INDEPNET Development Team.
+
+http://indepnet.net/   http://glpi-project.org
+----------------------------------------------------------------------
+
+LICENSE
+
+This file is part of GLPI.
+
+GLPI is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+GLPI is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with GLPI; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+------------------------------------------------------------------------
+*/
+
+// ----------------------------------------------------------------------
+// Sponsor: Oregon Dept. of Administrative Services, State Data Center
+// Original Author of file: Ryan Foster
+// Contact: Matt Hoover <dev@opensourcegov.net>
+// Project Website: http://www.opensourcegov.net
+// Purpose of file: Installation scripts.
+// ----------------------------------------------------------------------
+
+if (!defined('GLPI_ROOT')) {
+die('Sorry. You can\'t access this file directly.');
+}
+
+/**
+ * Install custom fields and do database work
+ *
+ * @return bool
+ */
+
 function pluginCustomfieldsInstall()
 {
    global $DB, $LANG;
 
    //Upgrade process if needed
+
    if (TableExists("glpi_plugin_customfields")) {
-      
+
+      // ** UPGRADE ** //
+
+      // <1.0.1
+
       if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'deleted')) { // <1.0.1
+         if (!FieldExists('glpi_plugin_customfields_fields', 'deleted')) {
             plugin_customfields_upgradeto101();
          }
       }
-      
-      //plugin_customfields_upgradeto110();
+
+      // <1.1.2
       
       if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'required')) { // <1.1.2
+         if (!FieldExists('glpi_plugin_customfields_fields', 'required')) {
             plugin_customfields_upgradeto112();
          }
       }
-      
+
+      // <1.1.3
+
       if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'entities')) { // <1.1.3
+         if (!FieldExists('glpi_plugin_customfields_fields', 'entities')) {
             plugin_customfields_upgradeto113();
          }
       }
       
       plugin_customfields_upgradeto116();
+
+      // <1.1.7
       
       if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'unique')) { // <1.1.7
+         if (!FieldExists('glpi_plugin_customfields_fields', 'unique')) {
             plugin_customfields_upgradeto117();
          }
       }
+
+      // <1.2
       
-      if (!TableExists("glpi_plugin_customfields_itemtypes")) { // <1.2
+      if (!TableExists("glpi_plugin_customfields_itemtypes")) {
          plugin_customfields_upgradeto12();
       }
       
@@ -42,55 +100,82 @@ function pluginCustomfieldsInstall()
       
       return true;
       
-   } else { //not installed
+   } else {
+
+      // ** INSTALLATION ** //
+
+      // Customfields type configuration table
       
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_itemtypes` (
+      $query = "CREATE TABLE
+                  IF NOT EXISTS `glpi_plugin_customfields_itemtypes` (
                   `id` int(11) NOT NULL auto_increment,
                   `itemtype` VARCHAR(100) NOT NULL default '',
                   `enabled` smallint(6) NOT NULL default '0',
                   PRIMARY KEY  (`id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->query($query) or die($DB->error());
+
+      // Add version string
       
       $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
                       (`itemtype`,`enabled`)
                VALUES ('Version', '12')";
       $DB->query($query) or die($DB->error());
+
+      // Add supported types
       
       $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
                        (`itemtype`)
-                VALUES ('Computer'), ('ComputerDisk'), ('Monitor'), ('Software'), 
-                       ('SoftwareVersion'),  ('SoftwareLicense'), ('NetworkEquipment'), 
-                       ('NetworkPort'), ('Peripheral'), ('Printer'), ('CartridgeItem'), 
-                       ('ConsumableItem'), ('Phone'), ('Ticket'), ('Contact'),
-                       ('Supplier'), ('Contract'), ('Document'), ('User'), 
-                       ('Group'), ('Entity'), ('DeviceProcessor'), ('DeviceMemory'),
-                       ('DeviceMotherboard'), ('DeviceNetworkCard'), ('DeviceHardDrive'),
-                       ('DeviceDrive'), ('DeviceControl'), ('DeviceGraphicCard'),
-                       ('DeviceSoundCard'), ('DeviceCase'), ('DevicePowerSupply'),
+                VALUES ('Computer'), ('ComputerDisk'), ('Monitor'),
+                       ('Software'), ('SoftwareVersion'),
+                       ('SoftwareLicense'), ('NetworkEquipment'),
+                       ('NetworkPort'), ('Peripheral'), ('Printer'),
+                       ('CartridgeItem'), ('ConsumableItem'), ('Phone'),
+                       ('Ticket'), ('Contact'), ('Supplier'), ('Contract'),
+                       ('Document'), ('User'), ('Group'), ('Entity'),
+                       ('DeviceProcessor'), ('DeviceMemory'),
+                       ('DeviceMotherboard'), ('DeviceNetworkCard'),
+                       ('DeviceHardDrive'),
+                       ('DeviceDrive'), ('DeviceControl'),
+                       ('DeviceGraphicCard'),
+                       ('DeviceSoundCard'), ('DeviceCase'),
+                       ('DevicePowerSupply'),
                        ('DevicePci')";
       $DB->query($query) or die($DB->error());
-      
+
+      // Customfields field configuration table
       
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_fields` (
                   `id` int(11) NOT NULL auto_increment,
                   `itemtype` VARCHAR(100) NOT NULL default '',
-                  `system_name` varchar(40) collate utf8_unicode_ci default NULL,
+                  `system_name` varchar(40) collate utf8_unicode_ci
+                    default NULL,
                   `label` varchar(70) collate utf8_unicode_ci default NULL,
-                  `data_type` varchar(30) collate utf8_unicode_ci NOT NULL default 'int(11)',
+                  `data_type` varchar(30) collate utf8_unicode_ci NOT NULL
+                    default 'int(11)',
                   `sort_order` smallint(6) NOT NULL default '0',
-                  `default_value` varchar(255) collate utf8_unicode_ci default NULL,
-                  `dropdown_table` varchar(255) collate utf8_unicode_ci default NULL,
+                  `default_value` varchar(255) collate utf8_unicode_ci
+                    default NULL,
+                  `dropdown_table` varchar(255) collate utf8_unicode_ci
+                    default NULL,
                   `deleted` smallint(6) NOT NULL DEFAULT '0',
                   `sopt_pos` int(11) NOT NULL DEFAULT '0',
                   `required` smallint(6) NOT NULL DEFAULT '0',
                   `entities` VARCHAR(255) NOT NULL DEFAULT '*',
                   `restricted` smallint(6) NOT NULL DEFAULT '0',
                   PRIMARY KEY  (`id`)
-                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3";
+                ) ENGINE=MyISAM
+                DEFAULT
+                  CHARSET=utf8
+                  COLLATE=utf8_unicode_ci
+                  AUTO_INCREMENT=3";
+
       $DB->query($query) or die($DB->error());
+
+      // Custom drop downs
       
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_dropdowns` (
+      $query = "CREATE TABLE
+                  IF NOT EXISTS `glpi_plugin_customfields_dropdowns` (
                   `id` int(11) NOT NULL auto_increment,
                   `system_name` varchar(40) collate utf8_unicode_ci default NULL,
                   `name` varchar(70) collate utf8_unicode_ci default NULL,
@@ -100,21 +185,30 @@ function pluginCustomfieldsInstall()
                   PRIMARY KEY  (`id`)
                 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
       $DB->query($query) or die($DB->error());
-      
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_dropdownsitems` (
+
+      // Custom drop down items
+
+      $query = "CREATE TABLE
+                  IF NOT EXISTS `glpi_plugin_customfields_dropdownsitems` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
                   `entities_id` int(11) NOT NULL DEFAULT '0',
                   `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
-                  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-                  `completename` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `name` varchar(255) CHARACTER SET utf8
+                    COLLATE utf8_unicode_ci DEFAULT NULL,
+                  `completename` TEXT CHARACTER SET utf8
+                    COLLATE utf8_unicode_ci DEFAULT NULL,
                   `level` INTEGER NOT NULL DEFAULT '0',
-                  `plugin_customfields_dropdowns_id` int(11) NOT NULL DEFAULT '0',
-                  `plugin_customfields_dropdownsitems_id` int(11) NOT NULL DEFAULT '0',
+                  `plugin_customfields_dropdowns_id` int(11) NOT NULL
+                    DEFAULT '0',
+                  `plugin_customfields_dropdownsitems_id` int(11) NOT NULL
+                    DEFAULT '0',
                   `comment` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
                   PRIMARY KEY (`id`)
                ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1";
       $DB->query($query) or die($DB->error());
-      
+
+      // Dropdown display preferences
+
       $query = "INSERT INTO `glpi_displaypreferences`
                   VALUES (NULL,'PluginCustomfieldsDropdownsItem','3','1','0');";
       $DB->query($query) or die($DB->error());
@@ -122,7 +216,9 @@ function pluginCustomfieldsInstall()
       $query = "INSERT INTO `glpi_displaypreferences`
                   VALUES (NULL,'PluginCustomfieldsDropdownsItem','4','2','0');";
       $DB->query($query) or die($DB->error());
-      
+
+      // Profiles
+
       $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_profiles` (
                   `id` int(11) NOT NULL ,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
@@ -131,26 +227,33 @@ function pluginCustomfieldsInstall()
       $DB->query($query) or die($DB->error());
       
       return true;
+
    }
+
 }
 
-
-
+/**
+ * Uninstall custom fields plugin
+ * @return bool
+ */
 
 function pluginCustomfieldsUninstall()
 {
    global $LANG, $DB;
    
-   //cancel search in session (if search on customfields is in progress before uninstall)
+   // Cancel search in session (if search on customfields is in progress
+   // before uninstall)
    Search::resetSaveSearch();
    
-   //get customfields itemtypes
+   // Get customfields itemtypes
    $query = "SELECT `itemtype`
              FROM `glpi_plugin_customfields_itemtypes`
              WHERE `itemtype` <> 'Version'";
    
-   //remove dynamic tables
+   // Remove data tables
+
    $itemtypes = array();
+
    if ($result = $DB->query($query)) {
       while ($data = $DB->fetch_assoc($result)) {
          $itemtypes[] = $data['itemtype'];
@@ -162,25 +265,34 @@ function pluginCustomfieldsUninstall()
       }
    }
    
-   //delete dropdown search option
+   // Delete dropdown search option
+
    $query = "DELETE FROM glpi_displaypreferences 
       WHERE itemtype = 'PluginCustomfieldsDropdownsItem'";
    $DB->query($query) or die($DB->error());
-   
-   
-   //delete object searchoption for itemptype existing links
+
+   // Delete object searchoption for itemptype existing links
+
    $searchopts_keys = array();
+
    foreach ($itemtypes as $itemtype) {
       $searchoptions   = plugin_customfields_getAddSearchOptions($itemtype);
-      $searchopts_keys = array_merge(array_keys($searchoptions), $searchopts_keys);
+      $searchopts_keys = array_merge(
+         array_keys($searchoptions),
+         $searchopts_keys
+      );
    }
+
    $searchopts_keys_str = "'" . implode("', '", $searchopts_keys) . "'";
-   $query               = "DELETE FROM glpi_displaypreferences WHERE num IN ($searchopts_keys_str)";
+   $query               = "DELETE FROM glpi_displaypreferences
+                           WHERE num IN ($searchopts_keys_str)";
    $DB->query($query) or die($DB->error());
    
    $query = "SELECT `dropdown_table`
              FROM `glpi_plugin_customfields_dropdowns`";
-   
+
+   // Delete custom dropdown tables
+
    if ($result = $DB->query($query)) {
       while ($data = $DB->fetch_assoc($result)) {
          $table = $data['dropdown_table'];
@@ -190,6 +302,8 @@ function pluginCustomfieldsUninstall()
          }
       }
    }
+
+   // Drop additional tables
    
    $tables = array(
       'glpi_plugin_customfields_dropdowns',
@@ -204,10 +318,14 @@ function pluginCustomfieldsUninstall()
    }
    
    return true;
+
 }
 
-
-
+/**
+ * Upgrade custom fields plugin
+ *
+ * @param $oldversion Version to upgrade from
+ */
 
 function plugin_customfields_upgrade($oldversion)
 {
@@ -239,7 +357,8 @@ function plugin_customfields_upgrade($oldversion)
    }
    
    // Add a column to indicate which entities to show the field with
-   // Remove column for hidden field, use blank in entites field to replace this functionality
+   // Remove column for hidden field, use blank in entites
+   // field to replace this functionality
    // Add restricted field to allow field-based permissions
    if ($oldversion < 113) {
       plugin_customfields_upgradeto113();
@@ -267,6 +386,9 @@ function plugin_customfields_upgrade($oldversion)
    
 }
 
+/**
+ * Upgrade => 1.01
+ */
 
 function plugin_customfields_upgradeto101()
 {
@@ -282,6 +404,9 @@ function plugin_customfields_upgradeto101()
    $DB->query($sql) or die($DB->error());
 }
 
+/**
+ * Upgrade => 1.1
+ */
 
 function plugin_customfields_upgradeto110()
 {
@@ -306,6 +431,9 @@ function plugin_customfields_upgradeto110()
    }
 }
 
+/**
+ * Upgrade => 1.12
+ */
 
 function plugin_customfields_upgradeto112()
 {
@@ -320,6 +448,9 @@ function plugin_customfields_upgradeto112()
    $DB->query($sql) or die($DB->error());
 }
 
+/**
+ * Upgrade => 1.13
+ */
 
 function plugin_customfields_upgradeto113()
 {
@@ -343,15 +474,26 @@ function plugin_customfields_upgradeto113()
    $DB->query($sql) or die($DB->error());
    
    if (!TableExists("glpi_plugin_customfields_profiledata")) {
-      $query = "CREATE TABLE IF NOT EXISTS `glpi_plugin_customfields_profiledata` (
+
+      $query = "CREATE TABLE
+                  IF NOT EXISTS `glpi_plugin_customfields_profiledata` (
                   `ID` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   PRIMARY KEY (`ID`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3";
+                ) ENGINE=MyISAM
+                DEFAULT
+                  CHARSET=utf8
+                  COLLATE=utf8_unicode_ci
+                  AUTO_INCREMENT=3";
       $DB->query($query) or die($DB->error());
+
    }
+
 }
 
+/**
+ * Upgrade => 1.16
+ */
 
 function plugin_customfields_upgradeto116()
 {
@@ -366,7 +508,11 @@ function plugin_customfields_upgradeto116()
                `device_type` int(11) NOT NULL default '0',
                `enabled` smallint(6) NOT NULL default '0',
                PRIMARY KEY (`ID`)
-             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3";
+             ) ENGINE=MyISAM
+             DEFAULT
+              CHARSET=utf8
+              COLLATE=utf8_unicode_ci
+              AUTO_INCREMENT=3";
    $DB->query($query) or die($DB->error());
    
    $query = "INSERT INTO `glpi_plugin_customfields`
@@ -376,8 +522,10 @@ function plugin_customfields_upgradeto116()
    
    $query = "INSERT INTO `glpi_plugin_customfields`
                     (`device_type`)
-             VALUES ('1'), ('41'), ('4'), ('6'), ('39'), ('20'), ('2'), ('42'), ('5'), ('3'), ('11'),
-                    ('17'), ('23'), ('16'), ('7'), ('8'), ('10'), ('13'), ('15'), ('27'), ('28')";
+             VALUES ('1'), ('41'), ('4'), ('6'), ('39'), ('20'), ('2'),
+             ('42'), ('5'), ('3'), ('11'),
+                    ('17'), ('23'), ('16'), ('7'), ('8'), ('10'), ('13'),
+                    ('15'), ('27'), ('28')";
    $DB->query($query) or die($DB->error());
    
    $transform             = array();
@@ -422,16 +570,23 @@ function plugin_customfields_upgradeto116()
    }
    
    $query = "ALTER TABLE `glpi_plugin_customfields_fields`
-             CHANGE `system_name` `system_name` varchar(40) collate utf8_unicode_ci default NULL,
-             CHANGE `label` `label` varchar(70) collate utf8_unicode_ci default NULL,
-             CHANGE `default_value` `default_value` varchar(255) collate utf8_unicode_ci default NULL,
-             CHANGE `dropdown_table` `dropdown_table` varchar(255) collate utf8_unicode_ci default NULL";
+             CHANGE `system_name` `system_name` varchar(40)
+              collate utf8_unicode_ci default NULL,
+             CHANGE `label` `label` varchar(70)
+              collate utf8_unicode_ci default NULL,
+             CHANGE `default_value` `default_value` varchar(255)
+              collate utf8_unicode_ci default NULL,
+             CHANGE `dropdown_table` `dropdown_table` varchar(255)
+              collate utf8_unicode_ci default NULL";
    $DB->query($query) or die($DB->error());
    
    $query = "ALTER TABLE `glpi_plugin_customfields_dropdowns`
-             CHANGE `system_name` `system_name` varchar(40) collate utf8_unicode_ci default NULL,
-             CHANGE `label` `label` varchar(70) collate utf8_unicode_ci default NULL,
-             CHANGE `dropdown_table` `dropdown_table` varchar(255) collate utf8_unicode_ci default NULL";
+             CHANGE `system_name` `system_name` varchar(40)
+              collate utf8_unicode_ci default NULL,
+             CHANGE `label` `label` varchar(70)
+              collate utf8_unicode_ci default NULL,
+             CHANGE `dropdown_table` `dropdown_table` varchar(255)
+              collate utf8_unicode_ci default NULL";
    $DB->query($query) or die($DB->error());
    
    $query = "UPDATE `glpi_plugin_customfields_fields`
@@ -443,6 +598,9 @@ function plugin_customfields_upgradeto116()
    Html::glpi_flush();
 }
 
+/**
+ * Upgrade => 1.17
+ */
 
 function plugin_customfields_upgradeto117()
 {
@@ -461,7 +619,11 @@ function plugin_customfields_upgradeto117()
                `device_type` int(11) NOT NULL default '0',
                `enabled` smallint(6) NOT NULL default '0',
                PRIMARY KEY  (`ID`)
-            ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3";
+            ) ENGINE=MyISAM
+            DEFAULT
+              CHARSET=utf8
+              COLLATE=utf8_unicode_ci
+              AUTO_INCREMENT=3";
    $DB->query($query) or die($DB->error());
    
    $query = "INSERT INTO `glpi_plugin_customfields`
@@ -472,8 +634,10 @@ function plugin_customfields_upgradeto117()
    
    $query = "INSERT INTO `glpi_plugin_customfields`
                    (`device_type`)
-            VALUES ('1', '41', '4', '6', '39', '20', '2', '42', '5', '3', '11', '17', '23', '16',
-                    '7', '8', '10', '13', '15', '27', '28' , '501', '502', '503', '504', '505',
+            VALUES ('1', '41', '4', '6', '39', '20', '2', '42', '5', '3',
+            '11', '17', '23', '16',
+                    '7', '8', '10', '13', '15', '27', '28' , '501', '502',
+                    '503', '504', '505',
                     '506', '507', '508', '509', '510', '511', '512')";
    $DB->query($query) or die($DB->error());
    
@@ -495,19 +659,29 @@ function plugin_customfields_upgradeto117()
    }
 }
 
+/**
+ * Upgrade => 1.2
+ */
 
 function plugin_customfields_upgradeto12()
 {
    global $DB;
    
    $glpi_tables = array(
-      'glpi_plugin_customfields_software' => 'glpi_plugin_customfields_softwares',
-      'glpi_plugin_customfields_networking' => 'glpi_plugin_customfields_networkequipments',
-      'glpi_plugin_customfields_enterprises' => 'glpi_plugin_customfields_suppliers',
-      'glpi_plugin_customfields_docs' => 'glpi_plugin_customfields_documents',
-      'glpi_plugin_customfields_tracking' => 'glpi_plugin_customfields_tickets',
-      'glpi_plugin_customfields_user' => 'glpi_plugin_customfields_users',
-      'glpi_plugin_customfields_networking_ports' => 'glpi_plugin_customfields_networkports'
+      'glpi_plugin_customfields_software' =>
+         'glpi_plugin_customfields_softwares',
+      'glpi_plugin_customfields_networking' =>
+         'glpi_plugin_customfields_networkequipments',
+      'glpi_plugin_customfields_enterprises' =>
+         'glpi_plugin_customfields_suppliers',
+      'glpi_plugin_customfields_docs' =>
+         'glpi_plugin_customfields_documents',
+      'glpi_plugin_customfields_tracking' =>
+         'glpi_plugin_customfields_tickets',
+      'glpi_plugin_customfields_user' =>
+         'glpi_plugin_customfields_users',
+      'glpi_plugin_customfields_networking_ports' =>
+         'glpi_plugin_customfields_networkports'
    );
    
    foreach ($glpi_tables as $oldtable => $newtable) {
@@ -518,12 +692,14 @@ function plugin_customfields_upgradeto12()
    }
    
    if (TableExists("glpi_plugin_customfields")) {
-      $query = "RENAME TABLE `glpi_plugin_customfields` TO `glpi_plugin_customfields_itemtypes`";
+      $query = "RENAME TABLE `glpi_plugin_customfields`
+         TO `glpi_plugin_customfields_itemtypes`";
       $DB->query($query) or die($DB->error());
       
       $query = "ALTER TABLE `glpi_plugin_customfields_itemtypes`
                 CHANGE `ID` `id` int(11) NOT NULL auto_increment,
-                CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL default ''";
+                CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL
+                  default ''";
       $DB->query($query) or die($DB->error());
       
       $tables = array(
@@ -566,7 +742,8 @@ function plugin_customfields_upgradeto12()
    if (TableExists("glpi_plugin_customfields_fields")) {
       $query = "ALTER TABLE `glpi_plugin_customfields_fields`
                 CHANGE `ID` `id` int(11) NOT NULL auto_increment,
-                CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL default ''";
+                CHANGE `device_type` `itemtype` VARCHAR(100) NOT NULL
+                  default ''";
       $DB->query($query) or die($DB->error());
       
       $tables = array(
@@ -586,4 +763,3 @@ function plugin_customfields_upgradeto12()
       $DB->query($query) or die($DB->error());
    }
 }
-?>

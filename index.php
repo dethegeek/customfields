@@ -36,15 +36,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // to the configuration page if the user has configuration rights.
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../..');
-include(GLPI_ROOT . '/inc/includes.php');
+include ('../../inc/includes.php');
 
-Html::header($LANG['plugin_customfields']['title'], $_SERVER['PHP_SELF'], 'plugins', 'customfields');
+// Header
+
+Html::header(
+   $LANG['plugin_customfields']['title'],
+   $_SERVER['PHP_SELF'],
+   'plugins',
+   'customfields'
+);
 
 if (Session::haveRight('config', 'w')) {
-   Html::redirect('./front/config.form.php'); // redirect to the configuration page
+
+   // redirect to the configuration page
+
+   Html::redirect('./front/config.form.php');
+
 } else {
-   echo '<div class="center"><br><br>' . '<img src="' . $CFG_GLPI['root_doc'] . '/pics/warning.png" alt="warning"><br><br>';
-   echo '<b>' . $LANG['login'][5] . '</b></div>'; // Displays 'Access denied'
+
+   // Displays 'Access denied'
+
+   echo '<div class="center"><br><br>'
+      . '<img src="'
+      . $CFG_GLPI['root_doc']
+      . '/pics/warning.png" alt="warning"><br><br>';
+   echo '<b>' . $LANG['login'][5] . '</b></div>';
+
 }
-?>

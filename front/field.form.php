@@ -36,18 +36,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // customfield's tab
 // ----------------------------------------------------------------------
 
-define('GLPI_ROOT', '../../..');
-include(GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
 if (isset($_POST['update_customfield'])) {
    if (isset($_POST['customfielditemtype']) && isset($_POST['id'])) {
+
+      // Update custom field
+
       $customFieldsItemType = $_POST['customfielditemtype'];
       $customFieldsItem     = new $customFieldsItemType();
       $customFieldsItem->getFromDB($_POST['id']);
       $customFieldsItem->update($_POST);
-      
-      //
+
    }
 }
+
 Html::back();
-?>
