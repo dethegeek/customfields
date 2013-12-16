@@ -469,7 +469,6 @@ if (isset($_GET['itemtype'])) {
    echo '<th>' . $LANG['plugin_customfields']['Type'] . '</th>';
    echo '<th>' . $LANG['plugin_customfields']['Sort'] . '</th>';
    echo '<th>' . $LANG['plugin_customfields']['Required'] . '</th>';
-   echo '<th>' . $LANG['plugin_customfields']['Restricted'] . '</th>';
    echo '<th>' . $LANG['plugin_customfields']['Entities'] . '</th>';
    echo '<th></th>';
    echo '</tr>';
@@ -527,16 +526,6 @@ if (isset($_GET['itemtype'])) {
       } else {
          echo '<td></td>';
       }
-
-      // Restricted
-
-      echo '<td class="center"><input name="restricted['
-         . $ID
-         . ']" type="checkbox"';
-      if ($data['restricted']) {
-         echo ' checked="checked"';
-      }
-      echo '></td>';
 
       // Entities
 
