@@ -336,16 +336,6 @@ function plugin_customfields_upgrade($oldversion)
       plugin_customfields_upgradeto101();
    }
    
-   // Save settings
-   $sql     = "SELECT `device_type`
-               FROM `glpi_plugin_customfields`
-               WHERE `enabled` = '1';";
-   $result  = $DB->query($sql);
-   $enabled = array();
-   while ($data = $DB->fetch_array($result)) {
-      $enabled[] = $data['device_type'];
-   }
-   
    // Upgrade date fields to be compatible with GLPI 0.72+
    if ($oldversion < 110) {
       plugin_customfields_upgradeto110();
@@ -378,6 +368,12 @@ function plugin_customfields_upgrade($oldversion)
    
    if ($oldversion < 12) {
       plugin_customfields_upgradeto12();
+   }
+
+   if ($oldversion < 150) {
+
+      plugin_customfields_upgradeto150();
+
    }
    
    if (CUSTOMFIELDS_AUTOACTIVATE) {
@@ -762,4 +758,19 @@ function plugin_customfields_upgradeto12()
                 CHANGE `ID` `id` int(11) NOT NULL auto_increment";
       $DB->query($query) or die($DB->error());
    }
+}
+
+/**
+ * Fake update to 1.50 to handle further database updates better
+ */
+
+function plugin_customfields_upgradeto150() {
+
+   global $DB;
+
+   $query = "UPDATE `glpi_plugin_customfields_itemtypes`
+             SET enabled=150
+             WHERE itemtype='Version'";
+   $DB->query($query) or die($DB->error());
+
 }

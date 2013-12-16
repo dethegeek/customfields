@@ -42,13 +42,14 @@ define('CUSTOMFIELDS_AUTOACTIVATE', true);
 
 // This is the last version that any tables changed.  This version may be
 // older than the plugin version if there were no changes db changes.
-define('CUSTOMFIELDS_DB_VERSION_REQUIRED', 12); // 1.2
+define('CUSTOMFIELDS_DB_VERSION_REQUIRED', 150); // 1.5
 
 global $ACTIVE_CUSTOMFIELDS_TYPES, $ALL_CUSTOMFIELDS_TYPES;
 $ACTIVE_CUSTOMFIELDS_TYPES = array();
 $ALL_CUSTOMFIELDS_TYPES    = array();
 
 include_once('inc/function.php');
+include_once('inc/install.function.php');
 include_once('inc/itemtype.class.php');
 include_once('inc/profile.class.php');
 include_once('inc/dropdown.class.php');
@@ -185,6 +186,12 @@ function plugin_customfields_check_prerequisites()
          $data      = $DB->fetch_array($result);
          //Version of the last modification to the plugin tables' structure
          $dbversion = $data['enabled'];
+
+         if ($dbversion == 12) {
+
+            $dbversion = 120;
+
+         }
          
          if ($dbversion < CUSTOMFIELDS_DB_VERSION_REQUIRED) {
 
