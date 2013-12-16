@@ -270,7 +270,10 @@ class PluginCustomfieldsField extends CommonDBTM
                
                $readonly = false;
 
-               if ($data['restricted']) {
+               if (
+                  (array_key_exists('restricted', $data)) &&
+                  ($data['restricted'])
+               ) {
 
                   $checkfield = $data['itemtype'] . '_' . $data['system_name'];
 
@@ -406,7 +409,7 @@ class PluginCustomfieldsField extends CommonDBTM
 
                      break;
                   
-                  case 'text':
+                  case 'notes':
 
                      # Multiline input
 
