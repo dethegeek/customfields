@@ -335,7 +335,7 @@ function plugin_item_add_customfields($obj)
 
 function plugin_item_purge_customfields($parm)
 {
-   global $ALL_CUSTOMFIELDS_TYPES;
+   global $ALL_CUSTOMFIELDS_TYPES, $DB;
    
    // Must delete custom fields when main item is purged, 
    // even if custom fields for this device are currently disabled
@@ -343,10 +343,11 @@ function plugin_item_purge_customfields($parm)
       in_array($parm->getType(), $ALL_CUSTOMFIELDS_TYPES)
       && ($table = plugin_customfields_table($parm->getType()))
    ) {
-      
-      $parm->delete(array(
-         'id' => $parm->getID()
-      ));
+
+      $sql    = "DELETE FROM $table where id=" . $parm->getID();
+
+      $DB->query($sql);
+
       return true;
 
    }
