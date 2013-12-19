@@ -209,7 +209,7 @@ function pluginCustomfieldsInstall()
 
       // Dropdown display preferences
 
-      $query = "INSERT INTO `glpi_displaypreferences`
+      $query = "INSERT IGNORE `glpi_displaypreferences`
                   VALUES (NULL,'PluginCustomfieldsDropdownsItem','3','1','0');";
       $DB->query($query) or die($DB->error());
       
