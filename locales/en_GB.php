@@ -51,7 +51,7 @@ $LANG['plugin_customfields']['delete_warning'] = '(Warning: Can\'t undo!)';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields'] = 'Manage '.$title;
-$LANG['plugin_customfields']['Type'] = $LANG['common'][17];
+$LANG['plugin_customfields']['Type'] = 'Type';
 $LANG['plugin_customfields']['Location'] = 'Location';
 $LANG['plugin_customfields']['Sort'] = 'Sort';
 $LANG['plugin_customfields']['Required'] = 'Required';
