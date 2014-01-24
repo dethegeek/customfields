@@ -48,6 +48,7 @@ $LANG['plugin_customfields']['System_Name'] = 'System Name';
 $LANG['plugin_customfields']['Update_Custom_Fields'] = 'Update '.$title;
 $LANG['plugin_customfields']['Update_Financial_CF'] = 'Update Financial CF';
 $LANG['plugin_customfields']['delete_warning'] = '(Warning: Can\'t undo!)';
+$LANG['plugin_customfields']['No_Fields'] = 'There is no custom fild available.';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields'] = 'Manage '.$title;
