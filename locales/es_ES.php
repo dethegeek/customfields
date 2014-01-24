@@ -47,7 +47,7 @@ $LANG['plugin_customfields']['delete_warning']        = '(¡Atención: no se pue
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields']   = 'Gestionar '.$title;
-$LANG['plugin_customfields']['Type']                   = $LANG['common'][17];
+$LANG['plugin_customfields']['Type']                   = 'Tipo';
 $LANG['plugin_customfields']['Sort']                   = 'Ordenar';
 $LANG['plugin_customfields']['Required']               = 'Requerido';
 $LANG['plugin_customfields']['Restricted']             = 'Restringido';
