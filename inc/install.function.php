@@ -209,7 +209,7 @@ function pluginCustomfieldsInstall()
 
       // Dropdown display preferences
 
-      $query = "INSERT INTO `glpi_displaypreferences`
+      $query = "INSERT IGNORE `glpi_displaypreferences`
                   VALUES (NULL,'PluginCustomfieldsDropdownsItem','3','1','0');";
       $DB->query($query) or die($DB->error());
       
@@ -533,12 +533,12 @@ function plugin_customfields_upgradeto116()
    $transform['number']   = 'INT(11) NOT NULL default \'0\'';
    $transform['money']    = 'DECIMAL(20,4) NOT NULL default \'0.0000\'';
    
-   $sql = "SELECT `device_type`, `system_name`, `data_type`
+   $sql = "SELECT `itemtype`, `system_name`, `data_type`
            FROM `glpi_plugin_customfields_fields`
            WHERE `deleted` = 0
                  AND `data_type` != 'sectionhead'
                  AND `data_type` != 'date'
-           ORDER BY `device_type`, `sort_order`, `ID`";
+           ORDER BY `itemtype`, `sort_order`, `ID`";
    $result = $DB->query($query) or die($DB->error());
    set_time_limit(300);
    echo 'Updating Custom Fields...';

@@ -160,7 +160,7 @@ class PluginCustomfieldsProfile extends CommonDBTM
       // Get user profile
       $query = "SELECT `id`
                 FROM `glpi_plugin_customfields_profiles`
-                WHERE `id` = '$ID'";
+                WHERE `id` = '$profiles_id'";
 
       if ($result = $DB->query($query)) {
          if ($DB->numrows($result)) {

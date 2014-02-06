@@ -139,7 +139,7 @@ class PluginCustomfieldsField extends CommonDBTM
 
    function showForm($id, $options = array())
    {
-      global $CFG_GLPI, $DB;
+      global $LANG, $CFG_GLPI, $DB;
 
       // ACL check
 
@@ -224,12 +224,30 @@ class PluginCustomfieldsField extends CommonDBTM
       
       $DB->free_result($result);
 
+      //Added
+      $associatedTable = $associatedItemType::getTable();
+      $entity = 0;
+      if (!in_array($associatedItemType, array('ComputerDisk', 'NetworkPort', 'Entity', 'SoftwareVersion', 'SoftwareLicense'))) {
+         $query = "SELECT entities_id
+                   FROM $associatedTable WHERE id= '$id'";
+         $result = $DB->query($query);
+         if ( $result != false ) {
+            $number = $DB->numrows($result);
+            if ($number == 1) {
+               $data = $DB->fetch_array($result);
+               $entity = $data['entities_id'];
+            }
+         }
+      }
+      $field_uses = false;
+      // End of added code
+
       // Select customfield configuration
 
       $sql = "SELECT `label`, `system_name`, `data_type`, `default_value`,
-                     `system_name`
+                     `entities`
 	  		    FROM `glpi_plugin_customfields_fields`
-	    		 WHERE `deleted` = '0' AND `itemtype` = '$associatedItemType'
+	    		 WHERE `deleted` = '0' AND `itemtype` = '$associatedItemType' 
 			    ORDER BY `sort_order` ASC, `label` ASC";
 
       $result             = $DB->query($sql);
@@ -239,7 +257,13 @@ class PluginCustomfieldsField extends CommonDBTM
       echo "<table class='tab_cadre_fixe'>";
 
       while ($data = $DB->fetch_assoc($result)) {
-
+         if ($data['entities'] != '*') {
+            $entities = explode(',', $data['entities']);
+            // don't process the field if it shouldn't be shown for this entity
+            if (!in_array($entity, $entities)) {
+               continue;
+            }
+         }
          switch ($data['data_type']) {
 
             case 'sectionhead':
@@ -252,7 +276,8 @@ class PluginCustomfieldsField extends CommonDBTM
                break;
 
             default:
-
+                
+               $field_uses = true;
                // Label
 
                if ($currentSectionName == '') {
@@ -462,20 +487,22 @@ class PluginCustomfieldsField extends CommonDBTM
 
       $DB->free_result($result);
       
-      if ($canedit) {
-
-         echo "<tr class='tab_bg_1'>";
-         echo "<td class='center' colspan='2'>";
-         echo "<input type='hidden' name='id' value='$id'>";
-         echo "<input type='hidden' name='customfielditemtype'
-            value='$itemType'>";
-         echo "<input type='submit' name='update_customfield' value='"
-            . _sx('button', 'Save')
-            . "' class='submit'>";
-         echo "</td></tr>";
-
+      if ($field_uses) {
+         if ($canedit) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td class='center' colspan='2'>";
+            echo "<input type='hidden' name='id' value='$id'>";
+            echo "<input type='hidden' name='customfielditemtype'
+               value='$itemType'>";
+            echo "<input type='submit' name='update_customfield' value='"
+               . _sx('button', 'Save')
+               . "' class='submit'>";
+            echo "</td></tr>";
+         }
+      } else {
+         echo $LANG['plugin_customfields']['No_Fields'];
       }
-
+              
       echo "</table>";
       Html::closeForm();
 
