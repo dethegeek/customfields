@@ -155,7 +155,6 @@ class PluginCustomfieldsField extends CommonDBTM
          case "Group":
          case "Monitor":
          case "Software":
-         case "NetworkEquipment":
          case "Peripheral":
          case "Printer":
          case "CartridgeItem":
@@ -163,6 +162,11 @@ class PluginCustomfieldsField extends CommonDBTM
          case "Phone":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
             $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
+            break;
+         // The "networkequipment" right doesn't exist in Session/Rigths variable. It's actually "networking".
+         case "NetworkEquipment":
+            $canedit = Session::haveRight("networking", "w");
+            $canread = Session::haveRight("networking", "r");
             break;
          case "ComputerDisk":
          case "DeviceProcessor":
