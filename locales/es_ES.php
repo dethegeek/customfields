@@ -44,10 +44,11 @@ $LANG['plugin_customfields']['Label']                 = 'Etiqueta';
 $LANG['plugin_customfields']['System_Name']           = 'Nombre en el sistema';
 $LANG['plugin_customfields']['Update_Custom_Fields']  = 'Actualizar '.$title;
 $LANG['plugin_customfields']['delete_warning']        = '(¡Atención: no se puede deshacer!)';
+$LANG['plugin_customfields']['No_Fields'] = 'No hay campos adicionales configurados';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields']   = 'Gestionar '.$title;
-$LANG['plugin_customfields']['Type']                   = $LANG['common'][17];
+$LANG['plugin_customfields']['Type']                   = 'Tipo';
 $LANG['plugin_customfields']['Sort']                   = 'Ordenar';
 $LANG['plugin_customfields']['Required']               = 'Requerido';
 $LANG['plugin_customfields']['Restricted']             = 'Restringido';

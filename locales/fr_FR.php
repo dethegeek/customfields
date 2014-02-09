@@ -49,6 +49,7 @@ $LANG['plugin_customfields']['System_Name'] = 'Nom interne DB';
 $LANG['plugin_customfields']['Update_Custom_Fields'] = 'Actualiser '.$title;
 $LANG['plugin_customfields']['Update_Financial_CF'] = 'mettre à jour les informations financières CF';
 $LANG['plugin_customfields']['delete_warning'] = '(Attention: annulation impossible!)';
+$LANG['plugin_customfields']['No_Fields'] = 'Aucun champ personnalisé n\'est disponible';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields'] = 'Gérer les '.$title;

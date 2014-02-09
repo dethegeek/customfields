@@ -47,6 +47,7 @@ $LANG['plugin_customfields']['Label'] = 'Bezeichnung';
 $LANG['plugin_customfields']['System_Name'] = 'Interner Name';
 $LANG['plugin_customfields']['Update_Custom_Fields'] = $title.' aktualisieren';
 $LANG['plugin_customfields']['delete_warning'] = '(Warnung! Kann nicht rückgängig gemacht werden)';
+$LANG['plugin_customfields']['No_Fields'] = 'There is no custom field available.';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields'] = $title.' verwalten';
@@ -116,3 +117,4 @@ include('devices.php');
 // Errors
 $LANG['plugin_customfields']['error'][1]  = "Sie haben keine Auswahlliste ausgewählt";
 
+$LANG['plugin_customfields']['No_Fields'] = "Es sind keine benutzerdefinierten Felder verfügbar.";
