@@ -81,8 +81,8 @@ class PluginCustomfieldsField extends CommonDBTM
       "DeviceSoundCard",
       "DeviceCase",
       "DevicePowerSupply",
-      "DevicePci"
-
+      "DevicePci",
+      "Budget"
    );
 
    /**
@@ -160,6 +160,7 @@ class PluginCustomfieldsField extends CommonDBTM
          case "CartridgeItem":
          case "ConsumableItem":
          case "Phone":
+         case "Budget":
             $canedit = Session::haveRight(strtolower($this->associatedItemType()), "w");
             $canread = Session::haveRight(strtolower($this->associatedItemType()), "r");
             break;
