@@ -116,5 +116,4 @@ include('devices.php');
 
 // Errors
 $LANG['plugin_customfields']['error'][1]  = "Sie haben keine Auswahlliste ausgewählt";
-
 $LANG['plugin_customfields']['No_Fields'] = "Es sind keine benutzerdefinierten Felder verfügbar.";

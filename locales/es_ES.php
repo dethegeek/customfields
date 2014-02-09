@@ -44,7 +44,6 @@ $LANG['plugin_customfields']['Label']                 = 'Etiqueta';
 $LANG['plugin_customfields']['System_Name']           = 'Nombre en el sistema';
 $LANG['plugin_customfields']['Update_Custom_Fields']  = 'Actualizar '.$title;
 $LANG['plugin_customfields']['delete_warning']        = '(¡Atención: no se puede deshacer!)';
-$LANG['plugin_customfields']['No_Fields'] = 'No hay campos adicionales configurados';
 
 // Manage Custom Fields
 $LANG['plugin_customfields']['Manage_Custom_Fields']   = 'Gestionar '.$title;
@@ -111,5 +110,4 @@ include('devices.php');
 
 // Errors
 $LANG['plugin_customfields']['error'][1]  = "No ha seleccionado combo";
-
-?>
+$LANG['plugin_customfields']['No_Fields'] = 'No hay campos adicionales configurados';
