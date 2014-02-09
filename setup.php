@@ -42,7 +42,7 @@ define('CUSTOMFIELDS_AUTOACTIVATE', true);
 
 // This is the last version that any tables changed.  This version may be
 // older than the plugin version if there were no changes db changes.
-define('CUSTOMFIELDS_DB_VERSION_REQUIRED', 150); // 1.5
+define('CUSTOMFIELDS_DB_VERSION_REQUIRED', 160); // 1.6
 
 global $ACTIVE_CUSTOMFIELDS_TYPES, $ALL_CUSTOMFIELDS_TYPES;
 $ACTIVE_CUSTOMFIELDS_TYPES = array();
@@ -155,7 +155,7 @@ function plugin_version_customfields()
       'license' => 'GPLv2+',
       'homepage' => 'https://forge.indepnet.net/projects/show/customfields',
       'minGlpiVersion' => '0.84',
-      'version' => '1.5'
+      'version' => '1.6'
    );
 }
 

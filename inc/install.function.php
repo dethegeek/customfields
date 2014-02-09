@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ----------------------------------------------------------------------
 
 if (!defined('GLPI_ROOT')) {
-die('Sorry. You can\'t access this file directly.');
+   die('Sorry. You can\'t access this file directly.');
 }
 
 /**
@@ -97,7 +97,7 @@ function pluginCustomfieldsInstall()
       }
       
       plugin_customfields_upgradeto110(); // must be at the end : itemtype
-      
+            
       return true;
       
    } else {
@@ -140,7 +140,7 @@ function pluginCustomfieldsInstall()
                        ('DeviceGraphicCard'),
                        ('DeviceSoundCard'), ('DeviceCase'),
                        ('DevicePowerSupply'),
-                       ('DevicePci')";
+                       ('DevicePci'), ('Budget')";
       $DB->query($query) or die($DB->error());
 
       // Customfields field configuration table
@@ -371,9 +371,11 @@ function plugin_customfields_upgrade($oldversion)
    }
 
    if ($oldversion < 150) {
-
       plugin_customfields_upgradeto150();
-
+   }
+   
+   if ($oldversion < 160) {
+      plugin_customfields_upgradeto160();
    }
    
    if (CUSTOMFIELDS_AUTOACTIVATE) {
@@ -539,9 +541,10 @@ function plugin_customfields_upgradeto116()
                  AND `data_type` != 'sectionhead'
                  AND `data_type` != 'date'
            ORDER BY `itemtype`, `sort_order`, `ID`";
-   $result = $DB->query($query) or die($DB->error());
+   $result = $DB->query($sql) or die($DB->error());
    set_time_limit(300);
    echo 'Updating Custom Fields...';
+   
    
    while ($data = $DB->fetch_array($result)) {
       echo '.';
@@ -579,7 +582,7 @@ function plugin_customfields_upgradeto116()
    $query = "ALTER TABLE `glpi_plugin_customfields_dropdowns`
              CHANGE `system_name` `system_name` varchar(40)
               collate utf8_unicode_ci default NULL,
-             CHANGE `label` `label` varchar(70)
+             CHANGE `name` `name` varchar(70)
               collate utf8_unicode_ci default NULL,
              CHANGE `dropdown_table` `dropdown_table` varchar(255)
               collate utf8_unicode_ci default NULL";
@@ -772,5 +775,25 @@ function plugin_customfields_upgradeto150() {
              SET enabled=150
              WHERE itemtype='Version'";
    $DB->query($query) or die($DB->error());
+
+}
+
+/**
+ * Update to version 1.60
+ */
+
+function plugin_customfields_upgradeto160() {
+
+	global $DB;
+	
+      $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
+                      (`itemtype`,`enabled`)
+               VALUES ('Budget', '0')";
+      $DB->query($query) or die($DB->error());
+			
+	$query = "UPDATE `glpi_plugin_customfields_itemtypes`
+             SET enabled=160
+             WHERE itemtype='Version'";
+	$DB->query($query) or die($DB->error());
 
 }
