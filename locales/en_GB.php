@@ -97,6 +97,7 @@ $LANG['plugin_customfields']['sectionhead'] = 'Section Header';
 $LANG['plugin_customfields']['multiselect'] = 'Multiselect';
 
 // Setup
+$LANG['plugin_customfields']['setup'][1] = 'There is no restricted field';
 $LANG['plugin_customfields']['setup'][2] = 'This plugin requires GLPI version 0.72 or higher';
 $LANG['plugin_customfields']['setup'][3] = 'Setup of '.$title.' Plugin';
 $LANG['plugin_customfields']['setup'][4] = 'Existing custom field data was found on your system. This data has been restored.';
