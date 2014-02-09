@@ -539,7 +539,7 @@ function plugin_customfields_upgradeto116()
                  AND `data_type` != 'sectionhead'
                  AND `data_type` != 'date'
            ORDER BY `itemtype`, `sort_order`, `ID`";
-   $result = $DB->query($query) or die($DB->error());
+   $result = $DB->query($sql) or die($DB->error());
    set_time_limit(300);
    echo 'Updating Custom Fields...';
    
@@ -579,7 +579,7 @@ function plugin_customfields_upgradeto116()
    $query = "ALTER TABLE `glpi_plugin_customfields_dropdowns`
              CHANGE `system_name` `system_name` varchar(40)
               collate utf8_unicode_ci default NULL,
-             CHANGE `label` `label` varchar(70)
+             CHANGE `name` `name` varchar(70)
               collate utf8_unicode_ci default NULL,
              CHANGE `dropdown_table` `dropdown_table` varchar(255)
               collate utf8_unicode_ci default NULL";
