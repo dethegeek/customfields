@@ -288,6 +288,9 @@ function pluginCustomfieldsUninstall()
                            WHERE num IN ($searchopts_keys_str)";
    $DB->query($query) or die($DB->error());
    
+   // TODO : The following query seems never used, but there is code using it !
+   // Needs testing 
+   
    $query = "SELECT `dropdown_table`
              FROM `glpi_plugin_customfields_dropdowns`";
 
@@ -310,7 +313,8 @@ function pluginCustomfieldsUninstall()
       'glpi_plugin_customfields_dropdownsitems',
       'glpi_plugin_customfields_fields',
       'glpi_plugin_customfields_itemtypes',
-      'glpi_plugin_customfields_profiles'
+      'glpi_plugin_customfields_profiles',
+      'glpi_plugin_customfields'
    );
    
    foreach ($tables as $table) {
