@@ -119,7 +119,7 @@ function pluginCustomfieldsInstall()
       
       $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
                       (`itemtype`,`enabled`)
-               VALUES ('Version', '12')";
+               VALUES ('Version', '160')";
       $DB->query($query) or die($DB->error());
 
       // Add supported types
