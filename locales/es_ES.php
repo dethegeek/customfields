@@ -89,7 +89,7 @@ $LANG['plugin_customfields']['yesno']           = 'Sí/No';
 $LANG['plugin_customfields']['sectionhead']     = 'Cabecera de sección';
 
 // Setup
-$LANG['plugin_customfields']['setup'][1] = 'There is no restricted field';
+$LANG['plugin_customfields']['setup'][1] = 'No hay ningún campo restringido';
 $LANG['plugin_customfields']['setup'][2] = 'Este plugin requiere la version 0.78  o mayor de GLPI.';
 $LANG['plugin_customfields']['setup'][3] = 'Configuración de '.$title.' Plugin';
 $LANG['plugin_customfields']['setup'][4] = 'Se encontraron datos de este plugin anteriores que han sido restaurados.';
