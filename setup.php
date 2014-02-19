@@ -181,7 +181,9 @@ function plugin_customfields_check_prerequisites()
          // Check the version of the database tables.
          $query     = "SELECT `enabled`
                     FROM `glpi_plugin_customfields_itemtypes`
-                    WHERE itemtype='Version';";
+                    WHERE itemtype='Version'
+                    ORDER BY `enabled` DESC
+                    LIMIT 1;";
          $result    = $DB->query($query);
          $data      = $DB->fetch_array($result);
          //Version of the last modification to the plugin tables' structure
