@@ -24,6 +24,4 @@ your data prior to this!)
 
 Do the same as the stable release, with the master branch.
 
-Currently, the 1.6 brach is the next planned release, in sync with the master branch.
-
 [GLPI forge]: https://forge.indepnet.net/projects/customfields
