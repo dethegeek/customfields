@@ -93,5 +93,10 @@ class PluginCustomfieldsItemtype extends CommonDBTM
       }
       
    }
+   
+   function registerItemtype($itemType)
+   {
+      
+   }
 
 }
