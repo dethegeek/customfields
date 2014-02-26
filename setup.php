@@ -168,7 +168,7 @@ function plugin_version_customfields()
 
 function plugin_customfields_check_prerequisites()
 {
-   if (GLPI_VERSION >= 0.84) {
+   if (version_compare(GLPI_VERSION, '0.84', 'ge') && version_compare(GLPI_VERSION, '0.85', 'lt')) {
       $plugin = new Plugin();
       
       // Automatically upgrade db (if necessary) when plugin is activated
@@ -211,8 +211,8 @@ function plugin_customfields_check_prerequisites()
 
    } else {
 
-      echo "This plugin requires GLPI version 0.84 or higher";
-
+      echo "This plugin requires GLPI >= 0.84 and < 0.85";
+      return false;
    }
 }
 
