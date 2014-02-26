@@ -94,9 +94,33 @@ class PluginCustomfieldsItemtype extends CommonDBTM
       
    }
    
-   function registerItemtype($itemType)
+   /**
+    * Register a new item type brought by an other plugin
+    *
+    * @param $itemtype
+    * 
+    */
+   static function registerItemtype($itemType)
    {
+      global $DB;
       
+      // Check if the new itemtype has already been registered
+      $query  = "SELECT `enabled`
+                 FROM `glpi_plugin_customfields_itemtypes`
+                 WHERE `itemtype` = '$itemType'";
+      $result = $DB->query($query);
+      
+      if ($DB->numrows($result) == 0) {
+         
+         // The new item type needs to be registered
+         $enabled = ( CUSTOMFIELDS_AUTOACTIVATE ? '1' : '0');
+         $query  = "INSERT INTO `glpi_plugin_customfields_itemtypes`
+                         (`itemtype`,`enabled`)
+                    VALUES ('$itemType', '$enabled')";
+         
+         $result = $DB->query($query);     
+          
+      }
    }
 
 }

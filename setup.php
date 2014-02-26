@@ -84,6 +84,9 @@ function plugin_init_customfields()
             array('addtabon' => 'Profile')
          );
       
+         // TODO : Merge the query and the while loop in virtual_classes.php
+         //        and the query and while loop below
+         
          include_once('inc/virtual_classes.php');
          
          $query  = "SELECT `itemtype`, `enabled`
