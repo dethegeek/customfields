@@ -9,7 +9,7 @@ State Data Center) located in the [GLPI forge][].
 
 This fork enables the use of this plugin in GLPI 0.84 onwards.
 
-## Installation
+## Installation of the stable release
 
 Download the current release (branch 1.5-bugfixes) and unpack the archive to a directory
 "customfields" inside the GLPI plugin directory. Afterwards use the GLPI web
@@ -19,5 +19,9 @@ Migrations of old version of the plugin are possible by just overwriting the
 previous code with this version (better removing the files from the previous
 version first) and using the update function in the web UI. (Please backup
 your data prior to this!)
+
+## Installation of the testing / development release
+
+Do the same as the stable release, with the master branch.
 
 [GLPI forge]: https://forge.indepnet.net/projects/customfields
