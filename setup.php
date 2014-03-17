@@ -181,40 +181,40 @@ function plugin_customfields_check_prerequisites()
       $plugin = new Plugin();
       
       // Automatically upgrade db (if necessary) when plugin is activated
-      if (
-         Session::haveRight('config', 'w')
-         && $plugin->isActivated("customfields")
-      ) {
+//       if (
+//          Session::haveRight('config', 'w')
+//          && $plugin->isActivated("customfields")
+//       ) {
 
-         global $DB;
-         // Check the version of the database tables.
-         $query     = "SELECT `enabled`
-                    FROM `glpi_plugin_customfields_itemtypes`
-                    WHERE itemtype='Version'
-                    ORDER BY `enabled` DESC
-                    LIMIT 1;";
-         $result    = $DB->query($query);
-         $data      = $DB->fetch_array($result);
-         //Version of the last modification to the plugin tables' structure
-         $dbversion = $data['enabled'];
+//          global $DB;
+//          // Check the version of the database tables.
+//          $query     = "SELECT `enabled`
+//                     FROM `glpi_plugin_customfields_itemtypes`
+//                     WHERE itemtype='Version'
+//                     ORDER BY `enabled` DESC
+//                     LIMIT 1;";
+//          $result    = $DB->query($query);
+//          $data      = $DB->fetch_array($result);
+//          //Version of the last modification to the plugin tables' structure
+//          $dbversion = $data['enabled'];
 
-         if ($dbversion == 12) {
+//          if ($dbversion == 12) {
 
-            $dbversion = 120;
+//             $dbversion = 120;
 
-         }
+//          }
          
-         if ($dbversion < CUSTOMFIELDS_DB_VERSION_REQUIRED) {
+//          if ($dbversion < CUSTOMFIELDS_DB_VERSION_REQUIRED) {
 
-            plugin_customfields_upgrade($dbversion);
+//             plugin_customfields_upgrade($dbversion);
 
-         }
-         if (CUSTOMFIELDS_AUTOACTIVATE) {
+//          }
+//          if (CUSTOMFIELDS_AUTOACTIVATE) {
 
-            plugin_customfields_activate_all_types();
+//             plugin_customfields_activate_all_types();
 
-         }
-      }
+//          }
+//       }
 
       return true;
 
