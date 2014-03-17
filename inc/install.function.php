@@ -54,55 +54,9 @@ function pluginCustomfieldsInstall()
 
    if (TableExists("glpi_plugin_customfields")) {
 
-      // ** UPGRADE ** //
-
-      // <1.0.1
-
-      if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'deleted')) {
-            plugin_customfields_upgradeto101();
-         }
-      }
-
-      // <1.1.2
-      
-      if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'required')) {
-            plugin_customfields_upgradeto112();
-         }
-      }
-
-      // <1.1.3
-
-      if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'entities')) {
-            plugin_customfields_upgradeto113();
-         }
-      }
-      
-      plugin_customfields_upgradeto116();
-
-      // <1.1.7
-      
-      if (TableExists("glpi_plugin_customfields_fields")) {
-         if (!FieldExists('glpi_plugin_customfields_fields', 'unique')) {
-            plugin_customfields_upgradeto117();
-         }
-      }
-
-      // <1.2
-      
-      if (!TableExists("glpi_plugin_customfields_itemtypes")) {
-         plugin_customfields_upgradeto12();
-      }
-      
-      plugin_customfields_upgradeto110(); // must be at the end : itemtype
-            
-      return true;
+      return pluginCustomFieldsUpgrade();
       
    } else {
-
-      // ** INSTALLATION ** //
 
       // Customfields type configuration table
       
@@ -230,6 +184,60 @@ function pluginCustomfieldsInstall()
 
    }
 
+}
+
+/**
+ * Upgrade custom fields plugin
+ * @return bool
+ */
+
+function pluginCustomFieldsUpgrade()
+{
+   global $DB, $LANG;
+   
+   // <1.0.1
+   
+   if (TableExists("glpi_plugin_customfields_fields")) {
+      if (!FieldExists('glpi_plugin_customfields_fields', 'deleted')) {
+         plugin_customfields_upgradeto101();
+      }
+   }
+   
+   // <1.1.2
+   
+   if (TableExists("glpi_plugin_customfields_fields")) {
+      if (!FieldExists('glpi_plugin_customfields_fields', 'required')) {
+         plugin_customfields_upgradeto112();
+      }
+   }
+   
+   // <1.1.3
+   
+   if (TableExists("glpi_plugin_customfields_fields")) {
+      if (!FieldExists('glpi_plugin_customfields_fields', 'entities')) {
+         plugin_customfields_upgradeto113();
+      }
+   }
+   
+   plugin_customfields_upgradeto116();
+   
+   // <1.1.7
+   
+   if (TableExists("glpi_plugin_customfields_fields")) {
+      if (!FieldExists('glpi_plugin_customfields_fields', 'unique')) {
+         plugin_customfields_upgradeto117();
+      }
+   }
+   
+   // <1.2
+   
+   if (!TableExists("glpi_plugin_customfields_itemtypes")) {
+      plugin_customfields_upgradeto12();
+   }
+   
+   plugin_customfields_upgradeto110(); // must be at the end : itemtype
+   
+   return true;
 }
 
 /**
