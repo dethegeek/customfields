@@ -113,7 +113,7 @@ class PluginCustomfieldsItemtype extends CommonDBTM
       if ($DB->numrows($result) == 0) {
          
          // The new item type needs to be registered
-         $enabled = ( CUSTOMFIELDS_AUTOACTIVATE ? '1' : '0');
+         $enabled = 0;
          $query  = "INSERT INTO `glpi_plugin_customfields_itemtypes`
                          (`itemtype`,`enabled`)
                     VALUES ('$itemType', '$enabled')";
