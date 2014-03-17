@@ -11,7 +11,7 @@ This fork enables the use of this plugin in GLPI 0.84 onwards.
 
 ## Installation of the stable release
 
-Download the current release (branch 1.5-bugfixes) and unpack the archive to a directory
+Download the current release and unpack the archive to a directory
 "customfields" inside the GLPI plugin directory. Afterwards use the GLPI web
 UI to install and activate the plugin.
 
