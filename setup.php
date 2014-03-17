@@ -140,6 +140,12 @@ function plugin_init_customfields()
       if (Session::haveRight('config', 'w')) {
          $PLUGIN_HOOKS['config_page']['customfields'] = 'front/config.form.php';
       }
+      
+      // TODO : Enable to handle post initialization and combine features 
+      //        with other plugins
+      // Hook for initialization after initialization of all other plugins
+      // $PLUGIN_HOOKS['post_init']['customfields'] = 'plugin_customfields_postinit';
+      
    }
 }
 

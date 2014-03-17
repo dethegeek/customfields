@@ -51,6 +51,7 @@ class PluginCustomfieldsField extends CommonDBTM
    static $supported_types = array(
       
       "Computer",
+      "ComputerVirtualMachine",
       "Monitor",
       "Software",
       "NetworkEquipment",
@@ -168,6 +169,7 @@ class PluginCustomfieldsField extends CommonDBTM
             $canedit = Session::haveRight("networking", "w");
             $canread = Session::haveRight("networking", "r");
             break;
+         case "ComputerVirtualMachine":
          case "ComputerDisk":
          case "DeviceProcessor":
          case "DeviceMemory":
@@ -227,7 +229,7 @@ class PluginCustomfieldsField extends CommonDBTM
       
       $sql    = "SELECT *
 	  		    FROM `$table`
-	          WHERE `id` = $id";
+	            WHERE `id` = $id";
       $result = $DB->query($sql);
       
       $associatedItemCustomValues = $DB->fetch_assoc($result);
@@ -254,9 +256,9 @@ class PluginCustomfieldsField extends CommonDBTM
 
       $sql = "SELECT `label`, `system_name`, `data_type`, `default_value`,
                      `entities`
-	  		    FROM `glpi_plugin_customfields_fields`
-	    		 WHERE `deleted` = '0' AND `itemtype` = '$associatedItemType' 
-			    ORDER BY `sort_order` ASC, `label` ASC";
+              FROM `glpi_plugin_customfields_fields`
+              WHERE `deleted` = '0' AND `itemtype` = '$associatedItemType' 
+              ORDER BY `sort_order` ASC, `label` ASC";
 
       $result             = $DB->query($sql);
       $currentSectionName = '';

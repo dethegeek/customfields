@@ -792,7 +792,7 @@ function plugin_customfields_upgradeto160() {
 	
       $query = "INSERT INTO `glpi_plugin_customfields_itemtypes`
                       (`itemtype`,`enabled`)
-               VALUES ('Budget', '0')";
+               VALUES ('Budget', '0'), ('ComputerVirtualMachine', '0')";
       $DB->query($query) or die($DB->error());
 			
 	$query = "UPDATE `glpi_plugin_customfields_itemtypes`
