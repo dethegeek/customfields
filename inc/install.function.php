@@ -140,7 +140,7 @@ function pluginCustomfieldsInstall()
                        ('DeviceGraphicCard'),
                        ('DeviceSoundCard'), ('DeviceCase'),
                        ('DevicePowerSupply'),
-                       ('DevicePci'), ('Budget')";
+                       ('DevicePci'), ('Budget'), ('ComputerVirtualMachine')";
       $DB->query($query) or die($DB->error());
 
       // Customfields field configuration table
