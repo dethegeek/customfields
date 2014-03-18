@@ -83,29 +83,7 @@ function plugin_init_customfields()
          Plugin::registerClass('PluginCustomfieldsProfile', 
             array('addtabon' => 'Profile')
          );
-      
-         // TODO : Merge the query and the while loop in virtual_classes.php
-         //        and the query and while loop below
-         
-         include_once('inc/virtual_classes.php');
-         
-         $query  = "SELECT `itemtype`, `enabled`
-                   FROM `glpi_plugin_customfields_itemtypes`
-                   WHERE `itemtype` <> 'Version'";
-         $result = $DB->query($query);
-         
-         while ($data = $DB->fetch_assoc($result)) {
-            $ALL_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
-            if ($data['enabled']) {
-               $ACTIVE_CUSTOMFIELDS_TYPES[] = $data['itemtype'];
-               Plugin::registerClass('PluginCustomfields' . $data['itemtype'], array(
-                  'addtabon' => array(
-                     $data['itemtype']
-                  )
-               ));
-            }
-         }
-         
+               
          // Display a menu entry in the main menu if the user has
          // configuration rights
 
@@ -144,7 +122,7 @@ function plugin_init_customfields()
       // TODO : Enable to handle post initialization and combine features 
       //        with other plugins
       // Hook for initialization after initialization of all other plugins
-      // $PLUGIN_HOOKS['post_init']['customfields'] = 'plugin_customfields_postinit';
+      $PLUGIN_HOOKS['post_init']['customfields'] = 'plugin_customfields_postinit';
       
    }
 }
