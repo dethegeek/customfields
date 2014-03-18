@@ -142,6 +142,11 @@ class PluginCustomfieldsItemtype extends CommonDBTM
           
          $result = $DB->query($query);
       
+         $table       = plugin_customfields_table($itemType);
+         if ($table) {
+            $query = "DROP TABLE IF EXISTS `$table`";
+            $DB->query($query) or die($DB->error());
+         }
       }
    }
 
