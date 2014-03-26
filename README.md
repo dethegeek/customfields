@@ -1,5 +1,11 @@
 # GLPI Custom fields plugin
 
+### Latest news 
+
+Further development will now be committed on the official repository of the plugin. 
+
+To download the latest development version, report bug, ask for new feature, or contribute, please go to the Forge : https://forge.indepnet.net/projects/customfields
+
 ## Introduction
 
 This plugin enables the management of custom fields for GLPI objects and is
