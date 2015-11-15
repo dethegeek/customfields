@@ -97,7 +97,8 @@ function plugin_customfields_getAddSearchOptions($itemtype)
    //TODO: Rewrite this function, based on old code
    //--but note that logging appears to work w/o separate item
    $sopt = array();
-   if (in_array($itemtype, $ACTIVE_CUSTOMFIELDS_TYPES)) {
+   //test existence first
+   if (!empty($ACTIVE_CUSTOMFIELDS_TYPES) && in_array($itemtype, $ACTIVE_CUSTOMFIELDS_TYPES)) {
       $query = "SELECT `glpi_plugin_customfields_fields`.*,
                        `glpi_plugin_customfields_dropdowns`.`is_tree`
                 FROM `glpi_plugin_customfields_fields`
